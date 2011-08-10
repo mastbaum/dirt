@@ -2,9 +2,7 @@
 <!DOCTYPE html>  
 <head>	
  <meta charset="utf-8">
- <title>Pyramid Task's List Tutorial</title>
- <meta name="author" content="Pylons Project">
- <link rel="shortcut icon" href="/static/favicon.ico">
+ <title>Title!</title>
  <link rel="stylesheet" href="/static/style.css">
 </head>
 
