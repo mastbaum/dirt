@@ -18,11 +18,18 @@ def main(global_config, **settings):
     # configuration setup
     config = Configurator(settings=settings, session_factory=session_factory)
     config.add_static_view('static', 'dirt:static')
+
+    # html views
     config.add_route('index', '/')
     config.add_route('task_new', '/task_new')
     config.add_route('record_new', '/record_new')
     config.add_route('record', '/record/{record_id}')
     config.add_route('task', '/task/{task_name}')
+
+    # xmlrpc views
+    config.add_route('add_record', '/add_record')
+    config.add_route('checkout_task', '/checkout_task')
+    config.add_route('checkin_task', '/checkin_task')
 
     config.scan()
 
