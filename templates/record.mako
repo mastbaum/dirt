@@ -3,8 +3,7 @@
 
 <h1>Record Detail</h1>
 <div style="margin:10px;border:solid 1px gray;background:#eeeeee;padding:6px">
- <hr width="75%" style="color:#aaaaaa;">
- <a href="#"><img src="" text-align="top" border=0>&nbsp;View in trac</a>
+ Description
 </div>
 <div>
  <table>
@@ -37,8 +36,6 @@
       % else:
        % if task['created']:
         <span title="Waiting" style="display:block;background:gray;width:12px;">&nbsp;</span>
-       % else:
-        ?
        % endif
       % endif
      % endif

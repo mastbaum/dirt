@@ -14,7 +14,7 @@
   % if records:
    % for record in records:
      <tr>
-      <td style="text-align:center;"><a href="${request.route_url('record', record_id=record['id'])}">${record['id']}, ${record['number']}</a>&nbsp;&nbsp;<a href="#"><img src="" border=0></a></td>
+      <td style="text-align:center;"><a href="${request.route_url('record', record_id=record['id'])}">${record['number']}</a></td>
       <td width="35%">${record['description']}
       </td>
       <td style="text-align:center;">

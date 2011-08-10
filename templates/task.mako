@@ -5,7 +5,7 @@
 <div>
  <table>
   <tr>
-   <th>Revision</th>
+   <th>Record</th>
    <th>Created</th>
    <th>Slave</th>
    <th>Checked Out</th>
@@ -16,7 +16,7 @@
    % if tasks:
     % for task in tasks:
    <tr>
-    <td style="text-align:center;"><a href="/record/${task['record_id']}">${task['record_id']}</a>&nbsp;&nbsp;<a href="#"><img src="" border=0></a></td>
+    <td style="text-align:center;"><a href="/record/${task['record_id']}">${task['record_id']}</a></td>
     <td style="text-align:center;">${task['created']}</td>
     <td style="text-align:center;">${task['slave_id']}</td>
     <td style="text-align:center;">${task['checked_out']}</td>
@@ -35,8 +35,6 @@
       % else:
        % if task['created']:
         <span title="Waiting" style="display:block;background:gray;width:12px;">&nbsp;</span>
-       % else:
-        ?
        % endif
       % endif
      % endif

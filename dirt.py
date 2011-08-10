@@ -142,7 +142,6 @@ if __name__ == '__main__':
     config.add_route('record_new', '/record_new')
     config.add_route('record', '/record/{record_id}')
     config.add_route('task', '/task/{task_name}')
-    #config.add_route('close', '/close/{id}')
     # static view setup
     config.add_static_view('static', os.path.join(here, 'static'))
     # scan for @view_config and @subscriber decorators
