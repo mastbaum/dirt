@@ -1,5 +1,15 @@
 from pyramid.view import view_config
 
+@view_config(route_name='couch', renderer="couch.mako")
+def home_view(request):
+    map_func = '''
+        function(doc) {
+        if (doc.cat)
+            emit(doc.id, doc);
+        }'''
+    documents = [[doc.key, doc.value] for doc in request.db.query(map_func)]
+    return {'documents': documents}
+
 @view_config(route_name='index', renderer='index.mako')
 def index_view(request):
     rs = request.db.execute("select id, number, description, uuid from record order by -id")

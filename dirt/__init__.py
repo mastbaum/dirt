@@ -1,4 +1,5 @@
 import os
+import couchdb
 from pyramid.session import UnencryptedCookieSessionFactoryConfig
 from pyramid.config import Configurator
 from dirt.resources import Root
@@ -6,17 +7,18 @@ from dirt.resources import Root
 here = os.path.dirname(os.path.abspath(__file__))
 
 def main(global_config, **settings):
-    """ This function returns a Pyramid WSGI application.
-    """
-    settings = {}
+    """ This function returns a Pyramid WSGI application."""
     settings['reload_all'] = True
     settings['debug_all'] = True
     settings['mako.directories'] = os.path.join(here, 'templates')
-    settings['db'] = os.path.join(here, 'dirt.db')
+
     # session factory
     session_factory = UnencryptedCookieSessionFactoryConfig('itsaseekreet')
+
     # configuration setup
     config = Configurator(settings=settings, session_factory=session_factory)
+    db_server = couchdb.client.Server(settings['couchdb_uri'])
+    config.registry.settings['db_server'] = db_server
     config.add_static_view('static', 'dirt:static')
 
     # html views
@@ -25,6 +27,7 @@ def main(global_config, **settings):
     config.add_route('record_new', '/record_new')
     config.add_route('record', '/record/{record_id}')
     config.add_route('task', '/task/{task_name}')
+    config.add_route('couch', '/couch')
 
     # xmlrpc views
     config.add_route('add_record', '/add_record')
