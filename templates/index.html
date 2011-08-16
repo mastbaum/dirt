@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*- 
-<%inherit file="layout.mako"/>
-
 <h1>All Records</h1>
 
 <div>
@@ -11,15 +8,12 @@
    <th># of Tests</th>
    <th>Test Status</th>
   </tr>
-  % if records:
-   % for record in records:
+  {?rows}
+   {#rows}
      <tr>
-      <td style="text-align:center;"><a href="${request.route_url('record', record_id=record['id'])}">${record['number']}</a></td>
-      <td width="35%">${record['description']}
-      </td>
-      <td style="text-align:center;">
-      N
-      </td>
+      <td style="text-align:center;"><a href="{baseURL}/record/{id}">{value.title}</a></td>
+      <td style="text-align:left;">{value.description}</td>
+      <td style="text-align:center;">N</td>
       <td width="65%">
        <div>
         <span title="Succeeded: %" style="display:inline-block;width:25%;background:green;margin:-3px;">&nbsp;</span>
@@ -32,10 +26,10 @@
        </div>
       </td>
      </tr>
-   % endfor
+   {/rows}
  </table>
- % else:
+ {:else}
   <h2>There are no records</h2>
- % endif
+ {/rows}
 </div>
 

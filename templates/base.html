@@ -1,22 +1,14 @@
-# -*- coding: utf-8 -*- 
 <!DOCTYPE html>  
 <head>	
  <meta charset="utf-8">
  <title>Title!</title>
- <link rel="stylesheet" href="/static/style.css">
+ <link rel="stylesheet" href="{baseURL}/static/css/style.css">
+ <script src="{baseURL}/static/js/jquery-1.5.2.min.js"></script>
+ <script src="{baseURL}/static/js/json2.js"></script>
+ <script src="{baseURL}/kanso.js"></script>
 </head>
 
 <body class="dashboard">
-
- % if request.session.peek_flash():
-  <div id="flash">
-   <% flash = request.session.pop_flash() %>
-    % for message in flash:
-     ${message}<br>
-    % endfor
-  </div>
- % endif
-
  <div id="header">
   <a href="/">
   <div id="branding">
@@ -27,7 +19,7 @@
 
  <div id="content" class="colMS" style="width:80%;">
   <div id="content-main">
-   ${next.body()}
+   {content|s}
   </div>
  </div>
 
@@ -52,7 +44,7 @@
    </tr>
   </table>
  </div>
- 
+
 </body>
 </html>
 
