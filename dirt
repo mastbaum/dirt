@@ -6,9 +6,33 @@
 
 import sys
 
+def get_available_tasks(db):
+    tasks = []
+    for id in db:
+        try:
+            if db[id]['type'] == 'record':
+                record = db[id]
+                for task in record['tasks']:
+                    d = {}
+                    d['record_id'] = id
+                    d['task_name'] = task['name']
+                    d['task_doc'] = task
+                    tasks.append(d)
+        except KeyError:
+            pass
+    return tasks
+
 def serve_forever():
+    import core.helpers
+    import core.load_balance
     print 'dirt is running...'
     # do things forever
+
+    # get outstanding tasks and available nodes
+    db = core.helpers.connect_to_db()
+    tasks = get_available_tasks(db)
+    nodes = core.load_balance.round_robin(db)
+
 
 def help():
     print \
