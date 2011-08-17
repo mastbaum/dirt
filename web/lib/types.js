@@ -12,7 +12,8 @@ exports.slave = new Type('slave', {
         last_login: fields.string({required:false}),
         password: fields.string(),
         enabled: fields.boolean()
-    }
+    },
+    allow_extra_fields: true
 });
 
 exports.task = new Type('task', {
