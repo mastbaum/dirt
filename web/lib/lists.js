@@ -21,13 +21,13 @@ exports.index = function (head, req) {
     if (req.client) {
         // being run client-side, update the current page
         $('#content').html(content);
-        document.title = 'MyThinger';
+        document.title = 'dirt :: Overview';
     }
     else {
         // being run server-side, return a complete rendered page
         return templates.render('base.html', req, {
             content: content,
-            title: 'MyAwesomeThinger'
+            title: 'dirt :: Overview'
         });
     }
 };
@@ -46,12 +46,12 @@ exports.task = function (head, req) {
 
     if (req.client) {
         $('#content').html(content);
-        document.title = 'MyThinger';
+        document.title = 'dirt :: Task Detail';
     }
     else {
         return templates.render('base.html', req, {
             content: content,
-            title: 'MyAwesomeThinger'
+            title: 'dirt :: Task Detail'
         });
     }
 };

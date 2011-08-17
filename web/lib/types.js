@@ -24,10 +24,9 @@ exports.task = new Type('task', {
         checked_out: fields.string({required:false}),
         completed: fields.string({required:false}),
         success: fields.boolean({required:false}),
-        results: fields.string({required:false}),
-        task_type: fields.string(),
         platform: fields.string()
-    }
+    },
+    allow_extra_fields: true
 });
 
 exports.record = new Type('record', {
@@ -41,6 +40,7 @@ exports.record = new Type('record', {
             type: exports.task,
             required: 'false'
         }),
-    }
+    },
+    allow_extra_fields: true
 });
 

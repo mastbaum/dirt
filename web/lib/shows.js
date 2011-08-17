@@ -13,7 +13,7 @@ exports.not_found = function (doc, req) {
 
 exports.record = function (doc, req) {
     return {
-        title: doc.title,
+        title: 'dirt :: Record Detail',
         description: doc.description,
         content: templates.render('record.html', req, doc)
     };
