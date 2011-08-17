@@ -31,6 +31,23 @@ def get_nodes(db):
             pass
     return hostnames, nodedocs
 
+# this should be a couchdb view
+def get_available_tasks(db):
+    tasks = []
+    for id in db:
+        try:
+            if db[id]['type'] == 'record':
+                record = db[id]
+                for task in record['tasks']:
+                    d = {}
+                    d['record_id'] = id
+                    d['task_name'] = task['name']
+                    d['task_doc'] = task
+                    tasks.append(d)
+        except KeyError:
+            pass
+    return tasks
+
 def node_recon(nodes, db, interactive=True):
     import execnet
     # move to settings.py

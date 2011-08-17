@@ -1,3 +1,6 @@
+# no need to wrap these in classes, since we call the module as
+# __channelexec__ anyway.
+
 class SystemInfoTask():
     '''get some basic system information'''
     def __init__(self, name):
