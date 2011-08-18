@@ -5,6 +5,7 @@
 # Andy Mastbaum (amastbaum@gmail.com), August 2011
 
 import sys
+import signal
 
 def help():
     print \
@@ -19,9 +20,16 @@ def help():
     database if necessary.
 '''
 
+def signal_handler(signal, frame):
+    print 'Caught SIGINT (Ctrl-C), Exiting.'
+    # do something smart
+    sys.exit(0)
+
 def serve_forever():
+    import couchdb
     import core.helpers
     import core.load_balance
+    signal.signal(signal.SIGINT, signal_handler)
     print 'dirt is running...'
 
     # get outstanding tasks and available nodes
@@ -29,9 +37,35 @@ def serve_forever():
     tasks = core.helpers.get_available_tasks(db)
     nodes = core.load_balance.round_robin(db)
 
-    print 'Available tasks:'
-    for task in tasks:
-        print task['record_id'], ':', task['task_name'], '->', nodes.next()['hostname']
+
+    # event loop
+    # changes eventually "runs out" despite being in continuous mode.
+    # wrap in an infinite loop?
+    last_seq = 0
+    while True:
+        # subscribe to changes feed. continuous mode makes a generator
+        # need to filter this for records
+        changes = db.changes(feed='continuous', since=last_seq)
+        for change in changes:
+            print change
+            try:
+                last_seq = change['seq']
+            except KeyError:
+                try:
+                    last_seq = change['last_seq']
+                except KeyError:
+                    print 'dirt: Unexpected document in change feed'
+            try:
+                id = change['id']
+                if db[id]['type'] == 'record':
+                    for task in db[id]['tasks']:
+                        print id, ':', task['name'], '->', nodes.next()['hostname']
+                    sys.stdout.flush()
+            except KeyError:
+                continue
+            except couchdb.http.ResourceNotFound:
+                continue
+        print 'dirt: changes last_seq', last_seq
 
 if __name__ == '__main__':
     if len(sys.argv) < 2:
