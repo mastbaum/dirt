@@ -25,41 +25,17 @@ def signal_handler(signal, frame):
     # do something smart
     sys.exit(0)
 
-def get_tasks(db):
-    '''more persistent wrapper for couchdb changes'''
-    import couchdb
-    while(True):
-        # should filter this for records
-        last_seq = 0
-        changes = db.changes(feed='continuous', since=last_seq)
-        for change in changes:
-            try:
-                id = change['id']
-                if db[id]['type'] == 'record':
-                    try:
-                        for task in db[id]['tasks']:
-                            yield id, task['name']
-                    except KeyError:
-                        continue
-            except KeyError:
-                try:
-                    # sometimes the feed terminates, but tells us the last seq
-                    last_seq = change['last_seq']
-                except KeyError:
-                    continue
-            except couchdb.http.ResourceNotFound:
-                continue
-
 def serve_forever():
     import couchdb
     import core.helpers
+    import core.dbi
     import core.load_balance
     signal.signal(signal.SIGINT, signal_handler)
     print 'dirt is running...'
 
     db = core.helpers.connect_to_db()
     nodes = core.load_balance.round_robin(db)
-    tasks = get_tasks(db)
+    tasks = core.dbi.get_tasks(db)
 
     for id, name in tasks:
         print id, ':', name, '->', nodes.next()['hostname']

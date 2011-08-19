@@ -18,43 +18,14 @@ def connect_to_db(host=couchdb_host, dbname=couchdb_dbname):
     print 'dirt: connected to db at %s/%s' % (couchdb_host, couchdb_dbname)
     return db
 
-# this should be a couchdb view
-def get_nodes(db):
-    nodedocs = []
-    hostnames = []
-    for id in db:
-        try:
-            if db[id]['type'] == 'slave':
-                nodedocs.append(db[id])
-                hostnames.append(db[id]['hostname'])
-        except KeyError:
-            pass
-    return hostnames, nodedocs
-
-# this should be a couchdb view
-def get_available_tasks(db):
-    tasks = []
-    for id in db:
-        try:
-            if db[id]['type'] == 'record':
-                record = db[id]
-                for task in record['tasks']:
-                    d = {}
-                    d['record_id'] = id
-                    d['task_name'] = task['name']
-                    d['task_doc'] = task
-                    tasks.append(d)
-        except KeyError:
-            pass
-    return tasks
-
 def node_recon(nodes, db, interactive=True):
     import execnet
+    import dbi
     # move to settings.py
     node_enable_default = True
     node_password_default = 'pw123'
 
-    hostnames, nodedocs = get_nodes(db)
+    hostnames, nodedocs = dbi.get_nodes(db)
     from tasks import system_info
     for node in nodes:
         try:
