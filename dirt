@@ -25,6 +25,31 @@ def signal_handler(signal, frame):
     # do something smart
     sys.exit(0)
 
+def get_tasks(db):
+    '''more persistent wrapper for couchdb changes'''
+    import couchdb
+    while(True):
+        # should filter this for records
+        last_seq = 0
+        changes = db.changes(feed='continuous', since=last_seq)
+        for change in changes:
+            try:
+                id = change['id']
+                if db[id]['type'] == 'record':
+                    try:
+                        for task in db[id]['tasks']:
+                            yield id, task['name']
+                    except KeyError:
+                        continue
+            except KeyError:
+                try:
+                    # sometimes the feed terminates, but tells us the last seq
+                    last_seq = change['last_seq']
+                except KeyError:
+                    continue
+            except couchdb.http.ResourceNotFound:
+                continue
+
 def serve_forever():
     import couchdb
     import core.helpers
@@ -32,40 +57,12 @@ def serve_forever():
     signal.signal(signal.SIGINT, signal_handler)
     print 'dirt is running...'
 
-    # get outstanding tasks and available nodes
     db = core.helpers.connect_to_db()
-    tasks = core.helpers.get_available_tasks(db)
     nodes = core.load_balance.round_robin(db)
+    tasks = get_tasks(db)
 
-
-    # event loop
-    # changes eventually "runs out" despite being in continuous mode.
-    # wrap in an infinite loop?
-    last_seq = 0
-    while True:
-        # subscribe to changes feed. continuous mode makes a generator
-        # need to filter this for records
-        changes = db.changes(feed='continuous', since=last_seq)
-        for change in changes:
-            print change
-            try:
-                last_seq = change['seq']
-            except KeyError:
-                try:
-                    last_seq = change['last_seq']
-                except KeyError:
-                    print 'dirt: Unexpected document in change feed'
-            try:
-                id = change['id']
-                if db[id]['type'] == 'record':
-                    for task in db[id]['tasks']:
-                        print id, ':', task['name'], '->', nodes.next()['hostname']
-                    sys.stdout.flush()
-            except KeyError:
-                continue
-            except couchdb.http.ResourceNotFound:
-                continue
-        print 'dirt: changes last_seq', last_seq
+    for id, name in tasks:
+        print id, ':', name, '->', nodes.next()['hostname']
 
 if __name__ == '__main__':
     if len(sys.argv) < 2:
