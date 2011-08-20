@@ -27,6 +27,8 @@ def signal_handler(signal, frame):
 
 def serve_forever():
     import couchdb
+    import execnet
+    import tasks.heartbeat
     import core.helpers
     import core.dbi
     import core.load_balance
@@ -34,11 +36,20 @@ def serve_forever():
     print 'dirt is running...'
 
     db = core.helpers.connect_to_db()
-    nodes = core.load_balance.round_robin(db)
-    tasks = core.dbi.get_tasks(db)
+    nodegen = core.load_balance.round_robin(db)
+    taskgen = core.dbi.get_tasks(db)
 
-    for id, name in tasks:
-        print id, ':', name, '->', nodes.next()['hostname']
+    for id, name in taskgen:
+        node = nodegen.next()['hostname']
+        print id, ':', name, '->', node
+        try:
+            print 'trying node', node, '...',
+            gw = execnet.makegateway('ssh=%s' % node)
+            ch = gw.remote_exec(tasks.heartbeat)
+            print ch.receive()
+        except execnet.gateway.HostNotFound:
+            print 'host', node, 'not found'
+            continue
 
 if __name__ == '__main__':
     if len(sys.argv) < 2:
