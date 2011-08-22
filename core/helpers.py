@@ -26,32 +26,13 @@ def remote_execute(node, id, taskname):
         print 'dirt: Host', hostname, 'not responding'
         return None
 
-# put in config file
-couchdb_host = 'http://localhost:5984'
-couchdb_dbname = 'dirt-kanso'
-
-def connect_to_db(host=couchdb_host, dbname=couchdb_dbname):
-    import couchdb
-    couch = couchdb.Server(couchdb_host)
-    try:
-        if couch.version() < '1.1.0':
-            print 'dirt: couchdb version >= 1.1.0 required'
-            sys.exit(1)
-        db = couch[couchdb_dbname]
-    except Exception:
-        print 'dirt: error connecting to database'
-        sys.exit(1)
-    print 'dirt: connected to db at %s/%s' % (couchdb_host, couchdb_dbname)
-    return db
-
 def node_recon(nodes, db, interactive=True):
     import execnet
-    import dbi
     # move to settings.py
     node_enable_default = True
     node_password_default = 'pw123'
 
-    hostnames, nodedocs = dbi.get_nodes(db)
+    hostnames, nodedocs = db.get_nodes()
     from tasks import system_info
     for node in nodes:
         try:

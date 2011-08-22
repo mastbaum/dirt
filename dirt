@@ -7,6 +7,10 @@
 import sys
 import signal
 
+# put in config file
+couchdb_host = 'http://localhost:5984'
+couchdb_dbname = 'dirt-kanso'
+
 def help():
     print \
 '''Usage:
@@ -35,15 +39,15 @@ def serve_forever():
     signal.signal(signal.SIGINT, signal_handler)
     print 'dirt is running...'
 
-    db = helpers.connect_to_db()
+    db = dbi.DirtCouchDB(couchdb_host, couchdb_dbname)
     nodegen = load_balance.round_robin(db)
-    taskgen = dbi.get_tasks(db)
+    taskgen = db.get_tasks()
 
     for id, taskname, taskid in taskgen:
         node = nodegen.next()
         print id, ':', taskname, '->', node['hostname']
         results = helpers.remote_execute(node, id, taskname)
-        dbi.results_db_push(db, id, taskid, results)
+        db.push_results(id, taskid, results)
 
 if __name__ == '__main__':
     if len(sys.argv) < 2:
