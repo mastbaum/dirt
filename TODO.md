@@ -7,6 +7,7 @@ to-do list
 dirt
 ----
 * use callbacks for async core.helpers.remote_execute
+* add xml-rpc for hidden hosts to establish connections
 
 tasks
 -----

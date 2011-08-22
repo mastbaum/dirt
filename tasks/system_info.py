@@ -2,7 +2,7 @@ import sys
 import os
 import socket
 
-def system_info():
+def execute():
     '''get some basic system information'''
     results = {}
     results['platform'] = sys.platform
@@ -15,10 +15,10 @@ def system_info():
     return results
 
 if __name__ == '__channelexec__':
-    results = system_info()
+    results = execute()
     channel.send(results)
 
 if __name__ == '__main__':
-    results = system_info()
+    results = execute()
     print results
 
