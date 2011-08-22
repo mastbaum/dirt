@@ -2,9 +2,9 @@
 
 import settings
 
-# make me asynchronous!
-def remote_execute(node, id, taskname):
+def remote_execute(db, node, id, taskid, taskname):
     import execnet
+    import dbi
     # have to import * due to execnet introspection :(
     from tasks import *
     hostname = node['hostname']
@@ -17,7 +17,8 @@ def remote_execute(node, id, taskname):
                 # boy, dynamic importing sure is complicated.
                 task_module = __import__('tasks.%s' % taskname, fromlist=['tasks'])
                 ch = gw.remote_exec(task_module)
-                return ch.receive()
+                push_args = {'id': id, 'taskid': taskid}
+                ch.setcallback(db.push_results, kwargs=push_args)
             except ImportError:
                 print 'dirt: Task', taskname, 'not found'
                 return None

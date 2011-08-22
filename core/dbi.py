@@ -14,7 +14,7 @@ class DirtCouchDB():
         except Exception:
             print 'dirt: error connecting to database'
             sys.exit(1)
-    def push_results(self, id, taskid, results):
+    def push_results(self, results, id, taskid):
         '''update record document with task results'''
         # todo: exiception handling
         # todo: key by name, not id

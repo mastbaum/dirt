@@ -27,6 +27,9 @@ def signal_handler(signal, frame):
     sys.exit(0)
 
 def serve_forever():
+    import execnet
+    print execnet.__file__
+
     from core import helpers
     from core import load_balance
     from core import dbi
@@ -40,8 +43,7 @@ def serve_forever():
     for id, taskname, taskid in taskgen:
         node = nodegen.next()
         print id, ':', taskname, '->', node['hostname']
-        results = helpers.remote_execute(node, id, taskname)
-        db.push_results(id, taskid, results)
+        helpers.remote_execute(db, node, id, taskid, taskname)
 
 if __name__ == '__main__':
     if len(sys.argv) < 2:
