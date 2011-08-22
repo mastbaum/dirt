@@ -1,7 +1,7 @@
 # these should be popped to different modules eventually
 
 # make me asynchronous!
-def remote_execute(node, id, task_name):
+def remote_execute(node, id, taskname):
     import execnet
     # have to import * due to execnet introspection :(
     from tasks import *
@@ -13,11 +13,11 @@ def remote_execute(node, id, task_name):
         if ch.receive():
             try:
                 # boy, dynamic importing sure is complicated.
-                task_module = __import__('tasks.%s' % task_name, fromlist=['tasks'])
+                task_module = __import__('tasks.%s' % taskname, fromlist=['tasks'])
                 ch = gw.remote_exec(task_module)
                 return ch.receive()
             except ImportError:
-                print 'dirt: Task', task_name, 'not found'
+                print 'dirt: Task', taskname, 'not found'
                 return None
         else:
             print 'dirt: Error connecting with host', hostname

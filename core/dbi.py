@@ -2,12 +2,12 @@
 # mostly should be turned into views
 # make a db object!
 
-def results_db_push(db, id, task_name, results):
+def results_db_push(db, id, taskid, results):
     '''update record document with task results'''
     # todo: exiception handling
     doc = db[id]
-    doc['tasks'][task_name]['results'] = results
-    doc.save()
+    doc['tasks'][taskid]['results'] = results
+    db.save(doc)
 
 def get_tasks(db):
     '''more persistent wrapper for couchdb changes'''
@@ -21,8 +21,9 @@ def get_tasks(db):
                 id = change['id']
                 if db[id]['type'] == 'record':
                     try:
-                        for task in db[id]['tasks']:
-                            yield id, task['name']
+                        for taskid in range(len(db[id]['tasks'])):
+                            if not db[id]['tasks'][taskid].has_key('results'):
+                                yield id, db[id]['tasks'][taskid]['name'], taskid
                     except KeyError:
                         continue
             except KeyError:

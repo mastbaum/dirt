@@ -39,11 +39,11 @@ def serve_forever():
     nodegen = load_balance.round_robin(db)
     taskgen = dbi.get_tasks(db)
 
-    for id, name in taskgen:
+    for id, taskname, taskid in taskgen:
         node = nodegen.next()
-        print id, ':', name, '->', node['hostname']
-        results = helpers.remote_execute(node, id, name)
-        print results
+        print id, ':', taskname, '->', node['hostname']
+        results = helpers.remote_execute(node, id, taskname)
+        dbi.results_db_push(db, id, taskid, results)
 
 if __name__ == '__main__':
     if len(sys.argv) < 2:
