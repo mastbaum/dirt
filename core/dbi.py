@@ -1,5 +1,13 @@
 # interfacing to couchdb
 # mostly should be turned into views
+# make a db object!
+
+def results_db_push(db, id, task_name, results):
+    '''update record document with task results'''
+    # todo: exiception handling
+    doc = db[id]
+    doc['tasks'][task_name]['results'] = results
+    doc.save()
 
 def get_tasks(db):
     '''more persistent wrapper for couchdb changes'''

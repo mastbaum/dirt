@@ -1,5 +1,31 @@
 # these should be popped to different modules eventually
 
+# make me asynchronous!
+def remote_execute(node, id, task_name):
+    import execnet
+    # have to import * due to execnet introspection :(
+    from tasks import *
+    hostname = node['hostname']
+    try:
+        # first, check if node is alive
+        gw = execnet.makegateway('ssh=%s' % hostname)
+        ch = gw.remote_exec(heartbeat)
+        if ch.receive():
+            try:
+                # boy, dynamic importing sure is complicated.
+                task_module = __import__('tasks.%s' % task_name, fromlist=['tasks'])
+                ch = gw.remote_exec(task_module)
+                return ch.receive()
+            except ImportError:
+                print 'dirt: Task', task_name, 'not found'
+                return None
+        else:
+            print 'dirt: Error connecting with host', hostname
+            return None
+    except execnet.gateway.HostNotFound:
+        print 'dirt: Host', hostname, 'not responding'
+        return None
+
 # put in config file
 couchdb_host = 'http://localhost:5984'
 couchdb_dbname = 'dirt-kanso'
@@ -56,14 +82,4 @@ def node_recon(nodes, db, interactive=True):
                 d['enabled'] = node_enable_default
                 d['password'] = node_password_default
         db.save(d)
-
-def system(cmd, wd=None):
-    '''a wrapper for subprocess.call, which executes cmd in working directory
-    wd in a bash shell, returning the exit code.'''
-    if wd:
-        cmd = ('cd %s && ' % wd) + cmd
-    if debug:
-        print cmd
-        return 0
-    return subprocess.call([cmd], executable='/bin/bash', shell=True)
 
