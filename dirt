@@ -6,10 +6,7 @@
 
 import sys
 import signal
-
-# put in config file
-couchdb_host = 'http://localhost:5984'
-couchdb_dbname = 'dirt-kanso'
+import settings
 
 def help():
     print \
@@ -30,16 +27,13 @@ def signal_handler(signal, frame):
     sys.exit(0)
 
 def serve_forever():
-    import couchdb
-    import execnet
-    import tasks.heartbeat
     from core import helpers
     from core import load_balance
     from core import dbi
     signal.signal(signal.SIGINT, signal_handler)
     print 'dirt is running...'
 
-    db = dbi.DirtCouchDB(couchdb_host, couchdb_dbname)
+    db = dbi.DirtCouchDB(settings.couchdb_host, settings.couchdb_dbname)
     nodegen = load_balance.round_robin(db)
     taskgen = db.get_tasks()
 
@@ -63,4 +57,7 @@ if __name__ == '__main__':
             help()
             sys.exit(1)
         core.helpers.node_recon(nodes, core.helpers.connect_to_db())
+    else:
+        help()
+        sys.exit(0)
 

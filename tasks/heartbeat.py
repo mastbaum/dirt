@@ -1,6 +1,7 @@
 def heartbeat():
     '''ensure node is alive and accepting connections'''
-    return {'alive': True}
+    from socket import getfqdn()
+    return {'fqdn': getfqdn(), 'alive': True}
 
 if __name__ == '__channelexec__':
     results = heartbeat()

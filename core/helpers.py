@@ -1,5 +1,7 @@
 # these should be popped to different modules eventually
 
+import settings
+
 # make me asynchronous!
 def remote_execute(node, id, taskname):
     import execnet
@@ -28,12 +30,8 @@ def remote_execute(node, id, taskname):
 
 def node_recon(nodes, db, interactive=True):
     import execnet
-    # move to settings.py
-    node_enable_default = True
-    node_password_default = 'pw123'
-
-    hostnames, nodedocs = db.get_nodes()
     from tasks import system_info
+    hostnames, nodedocs = db.get_nodes()
     for node in nodes:
         try:
             gw = execnet.makegateway('ssh=%s' % node)

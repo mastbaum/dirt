@@ -1,5 +1,4 @@
 # interfacing to couchdb
-# mostly should be turned into views
 
 import couchdb
 
@@ -47,6 +46,7 @@ class DirtCouchDB():
                         continue
                 except couchdb.http.ResourceNotFound:
                     continue
+    # should be turned into a view
     def get_nodes(self):
         nodedocs = []
         hostnames = []
