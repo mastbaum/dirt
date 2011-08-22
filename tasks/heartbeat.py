@@ -1,6 +1,6 @@
 def execute():
     '''ensure node is alive and accepting connections'''
-    from socket import getfqdn()
+    from socket import getfqdn
     return {'fqdn': getfqdn(), 'alive': True}
 
 if __name__ == '__channelexec__':
