@@ -7,6 +7,7 @@
 import sys
 import signal
 import settings
+from core.log import log
 
 def help():
     print \
@@ -22,7 +23,7 @@ def help():
 '''
 
 def signal_handler(signal, frame):
-    print 'Caught SIGINT (Ctrl-C), Exiting.'
+    log.write('Caught SIGINT (Ctrl-C), Exiting.')
     # do something smart
     sys.exit(0)
 
@@ -31,7 +32,7 @@ def serve_forever():
     from core import load_balance
     from core import dbi
     signal.signal(signal.SIGINT, signal_handler)
-    print 'dirt is running...'
+    log.write('dirt is running...')
 
     db = dbi.DirtCouchDB(settings.couchdb_host, settings.couchdb_dbname)
     nodes = load_balance.round_robin(db)
@@ -39,7 +40,7 @@ def serve_forever():
 
     for id, taskname, taskid in tasks:
         node = nodes.next()
-        print id, ':', taskname, '->', node['hostname']
+        log.write('%s : %s -> %s' % (id, taskname, node['hostname']))
         helpers.remote_execute(db, node, id, taskid, taskname)
 
 if __name__ == '__main__':

@@ -1,6 +1,7 @@
 # these should be popped to different modules eventually
 
 import settings
+from log import log
 
 def remote_execute(db, node, id, taskid, taskname):
     import execnet
@@ -20,13 +21,13 @@ def remote_execute(db, node, id, taskid, taskname):
                 push_args = {'id': id, 'taskid': taskid}
                 ch.setcallback(db.push_results, kwargs=push_args)
             except ImportError:
-                print 'dirt: Task', taskname, 'not found'
+                log.write('Task %s not found' % taskname)
                 return None
         else:
-            print 'dirt: Error connecting with host', hostname
+            log.write('Error connecting with host %s' % hostname)
             return None
     except execnet.gateway.HostNotFound:
-        print 'dirt: Host', hostname, 'not responding'
+        log.write('Host %s not responding' % hostname)
         return None
 
 def node_recon(nodes, db, interactive=True):
@@ -37,9 +38,9 @@ def node_recon(nodes, db, interactive=True):
         try:
             gw = execnet.makegateway('ssh=%s' % node)
         except execnet.HostNotFound:
-            print 'dirt: host not found:', node
+            log.write('Host not found: %s' % node)
             continue
-        print 'dirt: connected to host', node
+        log.write('Connected to host' % node)
         ch = gw.remote_exec(system_info)
         sys_info = ch.receive()
 
@@ -50,7 +51,7 @@ def node_recon(nodes, db, interactive=True):
         else:
             d = {'type': 'slave', 'hostname': sys_info['hostname'], 'sys_info': sys_info}
             if interactive:
-                print 'adding new node %s to database' % d['hostname']
+                log.write('Adding new node %s to database' % d['hostname'])
                 enable = raw_input('Enable node? [True|False] ')
                 if enable == 'True':
                     d['enabled'] = True

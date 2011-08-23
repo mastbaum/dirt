@@ -3,6 +3,7 @@
 
 import xmlrpclib
 import pickle
+from log import log
 
 def register_hidden():
     pass
@@ -17,7 +18,7 @@ if __name__ == '__main__':
     # for testing, serve from here
     from SimpleXMLRPCServer import SimpleXMLRPCServer
     server = SimpleXMLRPCServer(("localhost", 8000))
-    print "Listening on port 8000..."
+    log.write('RPC server listening on port 8000...')
     server.register_function(task_pull, "task_pull")
     server.serve_forever()
 

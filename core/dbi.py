@@ -1,33 +1,34 @@
 # interfacing to couchdb
 
 import couchdb
+from log import log
 
 class DirtCouchDB():
     def __init__(self, host, dbname):
         couch = couchdb.Server(host)
         try:
             if couch.version() < '1.1.0':
-                print 'dirt: couchdb version >= 1.1.0 required'
+                log.write('Error: couchdb version >= 1.1.0 required')
                 sys.exit(1)
             self.db = couch[dbname]
-            print 'dirt: connected to db at %s/%s' % (host, dbname)
+            log.write('Connected to db at %s/%s' % (host, dbname))
         except Exception:
-            print 'dirt: error connecting to database'
+            log.write('Error connecting to database')
             sys.exit(1)
     def push_results(self, results, id, taskid):
         '''update record document with task results'''
-        # todo: exiception handling
         # todo: key by name, not id
         try:
             doc = self.db[id]
             doc['tasks'][taskid]['results'] = results
             self.db.save(doc)
+            log.write('Task %s:%s pushed to db' % (id, taskid))
         except couchdb.ResourceNotFound:
-            print 'dirt: Cannot push results to db, document', id, 'not found.'
+            log.write('Cannot push results to db, document %s not found.' % id)
         except KeyError as key:
-            print 'dirt: Cannot push results to db,', key, 'key missing in document', id
+            log.write('Cannot push results to db, %s key missing in document %s', (key, id))
         except IndexError:
-            print 'dirt: Cannot push results to db, invalid task id', taskid, 'for document', id
+            log.write('Cannot push results to db, invalid task id %i for document %s' (taskid, id))
 
     def get_tasks(self):
         '''more persistent wrapper for couchdb changes'''
