@@ -27,9 +27,6 @@ def signal_handler(signal, frame):
     sys.exit(0)
 
 def serve_forever():
-    import execnet
-    print execnet.__file__
-
     from core import helpers
     from core import load_balance
     from core import dbi
@@ -37,11 +34,11 @@ def serve_forever():
     print 'dirt is running...'
 
     db = dbi.DirtCouchDB(settings.couchdb_host, settings.couchdb_dbname)
-    nodegen = load_balance.round_robin(db)
-    taskgen = db.get_tasks()
+    nodes = load_balance.round_robin(db)
+    tasks = db.get_tasks()
 
-    for id, taskname, taskid in taskgen:
-        node = nodegen.next()
+    for id, taskname, taskid in tasks:
+        node = nodes.next()
         print id, ':', taskname, '->', node['hostname']
         helpers.remote_execute(db, node, id, taskid, taskname)
 

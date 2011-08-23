@@ -18,9 +18,17 @@ class DirtCouchDB():
         '''update record document with task results'''
         # todo: exiception handling
         # todo: key by name, not id
-        doc = self.db[id]
-        doc['tasks'][taskid]['results'] = results
-        self.db.save(doc)
+        try:
+            doc = self.db[id]
+            doc['tasks'][taskid]['results'] = results
+            self.db.save(doc)
+        except couchdb.ResourceNotFound:
+            print 'dirt: Cannot push results to db, document', id, 'not found.'
+        except KeyError as key:
+            print 'dirt: Cannot push results to db,', key, 'key missing in document', id
+        except IndexError:
+            print 'dirt: Cannot push results to db, invalid task id', taskid, 'for document', id
+
     def get_tasks(self):
         '''more persistent wrapper for couchdb changes'''
         import couchdb
