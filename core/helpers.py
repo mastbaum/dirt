@@ -6,8 +6,9 @@ from log import log
 def remote_execute(db, node, id, taskid, taskname):
     import execnet
     import dbi
-    # have to import * due to execnet introspection :(
-    from tasks import *
+    # have to import * due to execnet introspection, but can't due to lambda...
+    from tasks import heartbeat
+    from tasks import system_info
     hostname = node['hostname']
     try:
         # first, check if node is alive
@@ -19,7 +20,7 @@ def remote_execute(db, node, id, taskid, taskname):
                 task_module = __import__('tasks.%s' % taskname, fromlist=['tasks'])
                 ch = gw.remote_exec(task_module)
                 push_args = {'id': id, 'taskid': taskid}
-                ch.setcallback(db.push_results, kwargs=push_args)
+                ch.setcallback(callback = lambda(results): db.push_results(results, **push_args))
             except ImportError:
                 log.write('Task %s not found' % taskname)
                 return None

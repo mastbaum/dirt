@@ -1,5 +1,6 @@
 # interfacing to couchdb
 
+import sys
 import couchdb
 from log import log
 
