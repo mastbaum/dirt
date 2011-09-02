@@ -1,4 +1,5 @@
 <!DOCTYPE html>  
+<html>
 <head>	
  <meta charset="utf-8">
  <title>dirt :: {title}</title>
@@ -8,7 +9,7 @@
  <script src="{baseURL}/kanso.js"></script>
 </head>
 
-<body class="dashboard">
+<body{! class="dashboard"!}>
  <div id="header">
   <a href="/">
   <div id="branding">
@@ -17,32 +18,32 @@
   </a>
  </div>
 
- <div id="content" class="colMS" style="width:80%;">
-  <div id="content-main">
+ <div class="colMS" style="display:table;width:90%">
+  <div style="display:table-row">
+  <div style="display:table-cell;width=100%" id="content">
    {content|s}
   </div>
- </div>
-
- <div>
-  <h3>Legend</h3>
-  <table>
-   <tr>
-    <td><span style="display:block;background:green;width:12px;">&nbsp;</span></td>
-    <td>Succeeded</td>
-   </tr>
-   <tr>
-    <td><span style="display:block;background:red;width:12px;">&nbsp;</span></td>
-    <td>Failed</td>
-   </tr>
-   <tr>
-    <td><span style="display:block;background:blue;width:12px;">&nbsp;</span></td>
-    <td>In Progress</td>
-   </tr>
-   <tr>
-    <td><span style="display:block;background:gray;width:12px;">&nbsp;</span></td>
-    <td>Waiting</td>
-   </tr>
-  </table>
+  <div style="display:table-cell">
+   <h3>Legend</h3>
+   <table>
+    <tr>
+     <td><span style="display:block;background:green;width:12px;">&nbsp;</span></td>
+     <td>Succeeded</td>
+    </tr>
+    <tr>
+     <td><span style="display:block;background:red;width:12px;">&nbsp;</span></td>
+     <td>Failed</td>
+    </tr>
+    <tr>
+     <td><span style="display:block;background:blue;width:12px;">&nbsp;</span></td>
+     <td>In Progress</td>
+    </tr>
+    <tr>
+     <td><span style="display:block;background:gray;width:12px;">&nbsp;</span></td>
+     <td>Waiting</td>
+    </tr>
+   </table>
+  </div>
  </div>
 
 </body>
