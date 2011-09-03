@@ -8,9 +8,9 @@ def remote_execute(db, node, id, taskid, taskname):
     hostname = node['hostname']
     try:
         # first, check if node is alive
-        heartbeat_module = __import__('tasks.heartbeat', fromlist=['tasks'])
+        ping_module = __import__('tasks.ping', fromlist=['tasks'])
         gw = execnet.makegateway('ssh=%s' % hostname)
-        ch = gw.remote_exec(heartbeat_module)
+        ch = gw.remote_exec(ping_module)
         if ch.receive():
             try:
                 task_module = __import__('tasks.%s' % taskname, fromlist=['tasks'])
