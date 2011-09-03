@@ -16,6 +16,7 @@ class DirtCouchDB():
         except Exception:
             log.write('Error connecting to database')
             sys.exit(1)
+
     def push_results(self, results, id, taskid):
         '''update record document with task results'''
         # todo: key by name, not id
@@ -32,22 +33,24 @@ class DirtCouchDB():
             log.write('Cannot push results to db, invalid task id %i for document %s' (taskid, id))
 
     def get_tasks(self):
-        '''more persistent wrapper for couchdb changes'''
-        import couchdb
+        '''more persistent wrapper for couchdb changes. the couchdb package
+        nicely provides the changes feed as a generator, but it terminates
+        after some time inactive. since the changes feed drives the dirt
+        event loop, we have to wrap the changes in a generator that will
+        never die.
+        '''
         while(True):
-            # should filter this for records
             last_seq = 0
-            changes = self.db.changes(feed='continuous', since=last_seq)
+            changes = self.db.changes(feed='continuous', since=last_seq, filter='dirt/record')
             for change in changes:
                 try:
                     id = change['id']
-                    if self.db[id]['type'] == 'record':
-                        try:
-                            for taskid in range(len(self.db[id]['tasks'])):
-                                if not self.db[id]['tasks'][taskid].has_key('results'):
-                                    yield id, self.db[id]['tasks'][taskid]['name'], taskid
-                        except KeyError:
-                            continue
+                    try:
+                        for taskid in range(len(self.db[id]['tasks'])):
+                            if not self.db[id]['tasks'][taskid].has_key('results'):
+                                yield id, self.db[id]['tasks'][taskid]['name'], taskid
+                    except KeyError:
+                        continue
                 except KeyError:
                     try:
                         # sometimes the feed terminates, but tells us the last seq
@@ -56,16 +59,13 @@ class DirtCouchDB():
                         continue
                 except couchdb.http.ResourceNotFound:
                     continue
-    # should be turned into a view
+
     def get_nodes(self):
+        '''query couch to get slave node data'''
         nodedocs = []
         hostnames = []
-        for id in self.db:
-            try:
-                if self.db[id]['type'] == 'slave':
-                    nodedocs.append(self.db[id])
-                    hostnames.append(self.db[id]['hostname'])
-            except KeyError:
-                pass
+        for row in self.db.view('_design/dirt/_view/slaves_by_created'):
+            nodedocs.append(row.key)
+            hostnames.append(row.value)
         return hostnames, nodedocs
 

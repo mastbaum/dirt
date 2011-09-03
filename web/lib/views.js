@@ -41,3 +41,10 @@ exports.tasks_by_name = {
     }
 };
 
+exports.slaves_by_created = {
+    map: function(doc) {
+        if(doc.type == 'slave')
+            emit(doc.hostname, doc);
+    }
+};
+
