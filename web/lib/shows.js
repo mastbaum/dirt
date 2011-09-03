@@ -12,6 +12,7 @@ exports.not_found = function (doc, req) {
 };
 
 exports.record = function (doc, req) {
+    // calculate overall success/failure
     var pass = true;
     for (task in doc.tasks) {
         if (!doc.tasks[task]['success']) {
@@ -20,8 +21,9 @@ exports.record = function (doc, req) {
         }
     }
     doc['pass'] = pass;
+
     return {
-        title: 'dirt :: Record Detail',
+        title: 'dirt :: Record Detail: ' + doc.title,
         content: templates.render('record.html', req, doc)
     };
 };

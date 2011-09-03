@@ -1,9 +1,11 @@
 /**
  * Show functions to be exported from the design doc.
  */
+
 exports.records_by_created = {
     map: function (doc) {
         if (doc.type == 'record') {
+            // percents passed, failed, etc., for overview page bar
             var percents = {'failed': 0, 'success': 0, 'inprogress': 0, 'waiting': 0};
             for (tasknum in doc.tasks) {
                 task = doc.tasks[tasknum];
@@ -22,6 +24,7 @@ exports.records_by_created = {
             }
             for (item in percents)
                 percents[item] = percents[item] * 100 / doc.tasks.length;
+
             emit(doc._id, {title: doc.title, description: doc.description, task_count: doc.tasks.length, percents: percents});
         }
     }
