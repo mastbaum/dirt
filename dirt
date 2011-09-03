@@ -39,9 +39,20 @@ def serve_forever():
     tasks = db.get_tasks()
 
     for id, taskname, taskid in tasks:
-        node = nodes.next()
-        log.write('%s : %s -> %s' % (id, taskname, node['hostname']))
-        helpers.remote_execute(db, node, id, taskid, taskname)
+        task_executed = False
+        while not task_executed:
+            node = nodes.next()
+            log.write('%s : %s -> %s' % (id, taskname, node['hostname']))
+            task_executed = helpers.remote_execute(db, node, id, taskid, taskname)
+
+def updatenodes(nodes):
+    from core import dbi
+    from core import helpers
+    db = dbi.DirtCouchDB(settings.couchdb_host, settings.couchdb_dbname)
+    if len(nodes) == 0:
+        help()
+        sys.exit(1)
+    helpers.node_recon(nodes, db)
 
 if __name__ == '__main__':
     if len(sys.argv) < 2:
@@ -51,12 +62,7 @@ if __name__ == '__main__':
     if sys.argv[1] == 'serve':
         serve_forever()
     elif sys.argv[1] == 'updatenodes':
-        import core.helpers
-        nodes = sys.argv[2:]
-        if len(nodes) == 0:
-            help()
-            sys.exit(1)
-        core.helpers.node_recon(nodes, core.helpers.connect_to_db())
+        updatenodes(nodes = sys.argv[2:])
     else:
         help()
         sys.exit(0)

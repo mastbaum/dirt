@@ -11,7 +11,8 @@ exports.slave = new Type('slave', {
         hostname: fields.string(),
         last_login: fields.string({required:false}),
         password: fields.string(),
-        enabled: fields.boolean()
+        enabled: fields.boolean(),
+        active: fields.boolean()
     },
     allow_extra_fields: true
 });

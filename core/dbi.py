@@ -28,9 +28,12 @@ class DirtCouchDB():
         except couchdb.ResourceNotFound:
             log.write('Cannot push results to db, document %s not found.' % id)
         except KeyError as key:
-            log.write('Cannot push results to db, %s key missing in document %s', (key, id))
+            log.write('Cannot push results to db, %s key missing in document %s' % (key, id))
         except IndexError:
-            log.write('Cannot push results to db, invalid task id %i for document %s' (taskid, id))
+            log.write('Cannot push results to db, invalid task id %i for document %s' % (taskid, id))
+
+    def save(self, doc):
+        self.db.save(doc)
 
     def get_tasks(self):
         '''more persistent wrapper for couchdb changes. the couchdb package
@@ -63,7 +66,14 @@ class DirtCouchDB():
     def get_nodes(self):
         '''query couch to get slave node data'''
         nodes = {}
-        for row in self.db.view('_design/dirt/_view/slaves_by_created'):
+        for row in self.db.view('_design/dirt/_view/slaves_by_hostname'):
             nodes[row.key] = row.value
         return nodes
+
+    def disable_node(self, hostname):
+        for row in self.db.view('_design/dirt/_view/slaves_by_hostname', key=hostname):
+            log.write('Disabling node %s' % hostname)
+            node = self.db[row.id]
+            node['enabled'] = False
+            self.db.save(node)
 
