@@ -32,10 +32,13 @@ def remote_execute(db, node, id, taskid, taskname):
         return None
 
 def node_recon(nodes, db, interactive=True):
+    '''grab system information from a list of hosts and create or update
+    slave nodes' db entries.
+    '''
     import execnet
     from tasks import system_info
-    hostnames, nodedocs = db.get_nodes()
-    for node in nodes:
+    nodes = db.get_nodes()
+    for node in nodelist:
         try:
             gw = execnet.makegateway('ssh=%s' % node)
         except execnet.HostNotFound:
@@ -46,13 +49,12 @@ def node_recon(nodes, db, interactive=True):
         sys_info = ch.receive()
 
         # update the db
-        if sys_info['hostname'] in hostnames:
-            d = nodedocs[hostnames.index(sys_info['hostname'])]
-            d['sys_info'] = sys_info
+        if sys_info['hostname'] in nodes:
+            nodes[sys_info['hostname']['sys_info'] = sys_info
         else:
             d = {'type': 'slave', 'hostname': sys_info['hostname'], 'sys_info': sys_info}
+            log.write('Adding new node %(hostname)s to database' % d)
             if interactive:
-                log.write('Adding new node %s to database' % d['hostname'])
                 enable = raw_input('Enable node? [True|False] ')
                 if enable == 'True':
                     d['enabled'] = True

@@ -6,8 +6,8 @@ def round_robin(db):
     round-robin fashion. re-gets the node list from the db each time
     around.'''
     while(True):
-        hostnames, nodedocs = db.get_nodes()
-        for node in nodedocs:
-            if node['enabled'] and not node['active']:
-                yield node
+        nodes = db.get_nodes()
+        for node in nodes:
+            if nodes[node]['enabled'] and not nodes[node]['active']:
+                yield nodes[node]
 

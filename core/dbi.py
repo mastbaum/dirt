@@ -62,10 +62,8 @@ class DirtCouchDB():
 
     def get_nodes(self):
         '''query couch to get slave node data'''
-        nodedocs = []
-        hostnames = []
+        nodes = {}
         for row in self.db.view('_design/dirt/_view/slaves_by_created'):
-            nodedocs.append(row.key)
-            hostnames.append(row.value)
-        return hostnames, nodedocs
+            nodes[row.key] = row.value
+        return nodes
 
