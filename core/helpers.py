@@ -5,19 +5,17 @@ from log import log
 
 def remote_execute(db, node, id, taskid, taskname):
     import execnet
-    # have to import * due to execnet introspection, but can't due to lambda...
-    from tasks import heartbeat
-    from tasks import system_info
     hostname = node['hostname']
     try:
         # first, check if node is alive
+        heartbeat_module = __import__('tasks.heartbeat', fromlist=['tasks'])
         gw = execnet.makegateway('ssh=%s' % hostname)
-        ch = gw.remote_exec(heartbeat)
+        ch = gw.remote_exec(heartbeat_module)
         if ch.receive():
             try:
-                # boy, dynamic importing sure is complicated.
                 task_module = __import__('tasks.%s' % taskname, fromlist=['tasks'])
                 ch = gw.remote_exec(task_module)
+                # use lambda to provide arguments to callback
                 push_args = {'id': id, 'taskid': taskid}
                 ch.setcallback(callback = lambda(results): db.push_results(results, **push_args))
             except ImportError:
@@ -56,6 +54,7 @@ def node_recon(nodelist, db, interactive=True):
         if sys_info['hostname'] in nodes:
             d = nodes[sys_info['hostname']]
             d['sys_info'] = sys_info
+            d['enabled'] = True
         else:
             d = {'type': 'slave', 'hostname': sys_info['hostname'], 'sys_info': sys_info}
             log.write('Adding new node %(hostname)s to database' % d)
