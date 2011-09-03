@@ -1,7 +1,5 @@
-<!DOCTYPE html>  
 <html>
 <head>	
- <meta charset="utf-8">
  <title>dirt :: {title}</title>
  <link rel="stylesheet" href="{baseURL}/static/css/style.css">
  <script src="{baseURL}/static/js/jquery-1.5.2.min.js"></script>
@@ -9,21 +7,22 @@
  <script src="{baseURL}/kanso.js"></script>
 </head>
 
-<body{! class="dashboard"!}>
+<body class="dashboard" style="width:100%">
  <div id="header">
-  <a href="/">
+  <a href="{baseURL}">
   <div id="branding">
    <h1 id="site-name">Title!</h1>
   </div>
   </a>
  </div>
 
- <div class="colMS" style="display:table;width:90%">
-  <div style="display:table-row">
-  <div style="display:table-cell;width=100%" id="content">
+ <div style="display:table;width:90%">
+  <div style="display:table-row;width:100%">
+  <div style="display:table-cell;width:100%" id="content">
    {content|s}
   </div>
-  <div style="display:table-cell">
+
+  <div style="display:table-cell;align:right;width:20%">
    <h3>Legend</h3>
    <table>
     <tr>

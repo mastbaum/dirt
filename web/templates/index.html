@@ -1,12 +1,12 @@
 <h1>All Records</h1>
 
 <div>
- <table width="90%">
+ <table width=65%>
   <tr>
    <th>Record ID</th>
    <th>Comments</th>
-   <th># of Tests</th>
-   <th>Test Status</th>
+   <th>#</th>
+   <th>Task Status</th>
   </tr>
   {?rows}
    {#rows}
@@ -20,9 +20,6 @@
         <span title="Failed: {value.percents.failed}%" style="display:inline-block;width:{value.percents.failed}%;background:red;margin:-3px;">&nbsp;</span>
         <span title="In Progress: {value.percents.inprogress}%" style="display:inline-block;width:{value.percents.inprogress}%;background:blue;margin:-3px;">&nbsp;</span>
         <span title="Waiting: {value.percents.waiting}%" style="display:inline-block;width:{value.percents.waiting}%;background:gray;margin:-3px;">&nbsp;</span>
-       </div>
-       <div id=LongDescription_rev${record['number']} style="display:none;margin:10px;padding:6px;">
-        long description
        </div>
       </td>
      </tr>

@@ -1,9 +1,10 @@
 <h1>Record Detail</h1>
-<div style="margin:10px;border:solid 1px gray;background:#eeeeee;padding:6px">
- {description}
-</div>
+
 <div>
- <table>
+ <div style="margin:10px;border:solid 1px gray;background:#eeeeee;padding:6px">
+  {description}
+ </div>
+ <table width=65%>
   <tr>
    <th>Name</th>
    <th>Slave</th>
@@ -12,9 +13,8 @@
    <th>Status</th>
    <th>Results</th>
   </tr>
-
   {?tasks}
-   {#tasks}
+   {#tasks record_id=_id}
    <tr>
     <td style="text-align:center;"><a href="{baseURL}/task/{name}?key=&#34;{name}&#34;">{name}</a></td>
     <td style="text-align:center;">{slave_id}</td>
@@ -40,20 +40,16 @@
      </center>
     </td>
     <td>
-{!
-     % if task['completed']:
-      % if task['task_type'] == 'rattest':
-       <a href="results.html">Summary</a>, <a href="#">Files</a>
-      % endif
-     % endif
-!}
+     {#completed}
+      {#attachments}
+       <a href="#" onClick="window.location='../../../../{record_id}/{id}'">{name}</a><br/>
+      {/attachments}
+     {/completed}
     </td>
    </tr>
    {/tasks}
   {/tasks}
-
-  </table>
- </div>
-</div>
+</table>
+<br/><span style="font-size:7pt">Document ID: <a href="#" onClick="window.location='http://localhost:5984/_utils/document.html?dirt-kanso/{_id}'">{_id}</span> 
 </div>
 
