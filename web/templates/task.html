@@ -1,61 +1,63 @@
-<h1>Task Detail</h1>
 <div>
- <table width=65%>
+ <div class="box" style="display:table;border">
+  <div style="display:table-row">
+   <div style="display:table-cell">
+    <h1 style="color:black;">{task_name}</h1>
+    <h3 style="color:black;margin-top:-6px">Task History</h3>
+   </div>
+  </div>
+ </div>
+
+ <table width=65% style="text-align:center">
   <tr>
-   <th>Record</th>
-   <th>Created</th>
-   <th>Slave</th>
-   <th>Checked Out</th>
-   <th>Completed</th>
-   <th>Status</th>
-   <th>Results</th>
+   <th style="text-align:center;">Record</th>
+   <th style="text-align:center;">Created</th>
+   <th style="text-align:center;">Slave</th>
+   <th style="text-align:center;">Checked Out</th>
+   <th style="text-align:center;">Completed</th>
+   <th style="text-align:center;">Status</th>
+   <th style="text-align:center;">Results</th>
   </tr>
-   {?rows}
+  {?rows}
    {#rows}
-
    <tr>
-    <td style="text-align:center;"><a href="{baseURL}/record/{value.record_id}">{value.record_title}</a></td>
-    <td style="text-align:center;">{created}</td>
-    <td style="text-align:center;">{slave_id}</td>
-    <td style="text-align:center;">{checked_out}</td>
-    <td style="text-align:center;">{completed}</td>
-    <td style="text-align:center;">
+    <td><a href="{baseURL}/record/{value.record_id}">{value.record_title}</a></td>
+    <td>{value.task.created}</td>
+    <td>{value.task.slave_id}</td>
+    <td>{value.task.checked_out}</td>
+    <td>{value.task.completed}</td>
+    <td>
      <center>
-
-
-     {#completed}
-      {#success}
+     {#value.task.completed}
+      {#value.task.success}
        <span title="Succeeded" style="display:block;background:green;width:12px;">&nbsp;</span>
       {:else}
        <span title="Failed" style="display:block;background:red;width:12px;">&nbsp;</span>
-      {/success}
+      {/value.task.success}
      {:else}
-      {#checked_out}
+      {#value.task.checked_out}
       <span title="In Progress" style="display:block;background:blue;width:12px;">&nbsp;</span>
       {:else}
-       {#created}
+       {#value.task.created}
         <span title="Waiting" style="display:block;background:gray;width:12px;">&nbsp;</span>
-       {/created}
-      {/checked_out}
-     {/completed}
-
+       {/value.task.created}
+      {/value.task.checked_out}
+     {/value.task.completed}
      </center>
     </td>
     <td>
-{!
-     {#completed}
-      {#task_type === 'rattest'}
-       <a href="#">Summary</a>, <a href="#">Files</a>
-      {/task_type}
-     {/completed}
-!}
+     {?value.task.completed}
+      {#value.task.attachments record_id=value.record_id}
+       <a href="#" onClick="window.location='../../../../{record_id}/{id}'">{name}</a><br/>
+      {/value.task.attachments}
+     {/value.task.completed}
     </td>
    </tr>
    {/rows}
-   </table>
-   {:else}
-   </table>
-   <h2>There are no tasks</h2>
-   {/rows}
- </div>
+  </table>
+ {:else}
+  </table>
+  <h2>There are no tasks</h2>
+ {/rows}
+</div>
 

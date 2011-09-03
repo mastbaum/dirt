@@ -12,6 +12,14 @@ exports.not_found = function (doc, req) {
 };
 
 exports.record = function (doc, req) {
+    var pass = true;
+    for (task in doc.tasks) {
+        if (!doc.tasks[task]['success']) {
+            pass = false;
+            break;
+        }
+    }
+    doc['pass'] = pass;
     return {
         title: 'dirt :: Record Detail',
         content: templates.render('record.html', req, doc)

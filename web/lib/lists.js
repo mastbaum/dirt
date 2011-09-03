@@ -34,6 +34,7 @@ exports.index = function (head, req) {
 
 exports.task = function (head, req) {
     start({code: 200, headers: {'Content-Type': 'text/html'}});
+    var task_name = req.query.key.replace(/"/g,'');
 
     var row, rows = [];
     while (row = getRow()) {
@@ -41,6 +42,7 @@ exports.task = function (head, req) {
     }
 
     var content = templates.render('task.html', req, {
+        task_name: task_name,
         rows: rows
     });
 
