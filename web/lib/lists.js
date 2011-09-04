@@ -30,13 +30,14 @@ exports.index = function (head, req) {
 
 exports.task = function (head, req) {
     start({code: 200, headers: {'Content-Type': 'text/html'}});
-    var task_name = req.query.key.replace(/"/g,'');
-    var title = 'dirt :: Task Detail: ' + task_name;
 
+    var task_name;
     var row, rows = [];
     while (row = getRow()) {
+        task_name = row.value.task.name
         rows.push(row);
     }
+    var title = 'dirt :: Task Detail: ' + task_name;
 
     var content = templates.render('task.html', req, {
         task_name: task_name,

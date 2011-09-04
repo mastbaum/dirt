@@ -4,8 +4,9 @@ import settings
 from log import log
 
 def remote_execute(db, node, id, taskid, taskname):
+    import time
     import execnet
-    hostname = node['hostname']
+    hostname = node['fqdn']
     try:
         # first, check if node is alive
         ping_module = __import__('tasks.ping', fromlist=['tasks'])
@@ -15,6 +16,10 @@ def remote_execute(db, node, id, taskid, taskname):
             try:
                 task_module = __import__('tasks.%s' % taskname, fromlist=['tasks'])
                 ch = gw.remote_exec(task_module)
+                doc = db[id]
+                doc['tasks'][taskid]['checked_out'] = time.time()
+                doc['tasks'][taskid]['slave'] = hostname
+                db.db.save(doc)
                 # use lambda to provide arguments to callback
                 push_args = {'id': id, 'taskid': taskid}
                 ch.setcallback(callback = lambda(results): db.push_results(results, **push_args))
@@ -51,13 +56,13 @@ def node_recon(nodelist, db, interactive=True):
         sys_info = ch.receive()
 
         # update the db
-        if sys_info['hostname'] in nodes:
-            d = nodes[sys_info['hostname']]
+        if sys_info['fqdn'] in nodes:
+            d = nodes[sys_info['fqdn']]
             d['sys_info'] = sys_info
             d['enabled'] = True
         else:
-            d = {'type': 'slave', 'hostname': sys_info['hostname'], 'sys_info': sys_info}
-            log.write('Adding new node %(hostname)s to database' % d)
+            d = {'type': 'slave', 'fqdn': sys_info['fqdn'], 'sys_info': sys_info, 'active': False}
+            log.write('Adding new node %(fqdn)s to database' % d)
             if interactive:
                 enable = raw_input('Enable node? [True|False] ')
                 if enable == 'True':

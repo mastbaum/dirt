@@ -14,14 +14,18 @@ exports.not_found = function (doc, req) {
 exports.record = function (doc, req) {
     // calculate overall success/failure
     var pass = true;
+    var inprogress = false;
     for (task in doc.tasks) {
-        if (!doc.tasks[task]['success']) {
+        if (!doc.tasks[task]['results']['success']) {
             pass = false;
             break;
         }
+        if (!doc.tasks[task]['completed']) {
+            inprogress = true;
+        }
     }
     doc['pass'] = pass;
-
+    doc['inprogress'] = inprogress;
     return {
         title: 'dirt :: Record Detail: ' + doc.title,
         content: templates.render('record.html', req, doc)

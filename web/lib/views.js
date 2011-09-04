@@ -10,7 +10,7 @@ exports.records_by_created = {
             for (tasknum in doc.tasks) {
                 task = doc.tasks[tasknum];
                 if (task.completed) {
-                    if (task.success)
+                    if (task.results.success)
                         percents['success'] += 1;
                     else
                         percents['failed'] += 1;
@@ -35,7 +35,7 @@ exports.tasks_by_name = {
         if(doc.type == 'record') {
             for(var i in doc.tasks) {
                 var task = doc.tasks[i];
-                emit(task.name, {'record_id': doc._id, 'record_title': doc.title, 'task': task});
+                emit([task.name], {'record_id': doc._id, 'record_title': doc.title, 'task': task});
             }
         }
     }
@@ -44,7 +44,7 @@ exports.tasks_by_name = {
 exports.slaves_by_hostname = {
     map: function(doc) {
         if(doc.type == 'slave')
-            emit(doc.hostname, doc);
+            emit(doc.fqdn, doc);
     }
 };
 

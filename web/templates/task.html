@@ -23,26 +23,30 @@
    <tr>
     <td><a href="{baseURL}/record/{value.record_id}">{value.record_title}</a></td>
     <td>{value.task.created}</td>
-    <td>{value.task.slave_id}</td>
+    <td>{value.task.slave}</td>
     <td>{value.task.checked_out}</td>
     <td>{value.task.completed}</td>
     <td>
      <center>
-     {#value.task.completed}
-      {#value.task.success}
-       <span title="Succeeded" style="display:block;background:green;width:12px;">&nbsp;</span>
+     {#value.task}
+      {#completed}
+       {#results}
+        {#success}
+         <span title="Succeeded" style="display:block;background:green;width:12px;">&nbsp;</span>
+        {:else}
+         <span title="Failed" style="display:block;background:red;width:12px;">&nbsp;</span>
+        {/success}
+       {/results}
       {:else}
-       <span title="Failed" style="display:block;background:red;width:12px;">&nbsp;</span>
-      {/value.task.success}
-     {:else}
-      {#value.task.checked_out}
-      <span title="In Progress" style="display:block;background:blue;width:12px;">&nbsp;</span>
-      {:else}
-       {#value.task.created}
-        <span title="Waiting" style="display:block;background:gray;width:12px;">&nbsp;</span>
-       {/value.task.created}
-      {/value.task.checked_out}
-     {/value.task.completed}
+       {#checked_out}
+       <span title="In Progress" style="display:block;background:blue;width:12px;">&nbsp;</span>
+       {:else}
+        {#created}
+         <span title="Waiting" style="display:block;background:gray;width:12px;">&nbsp;</span>
+        {/created}
+       {/checked_out}
+      {/completed}
+     {/value.task}
      </center>
     </td>
     <td>

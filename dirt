@@ -42,7 +42,7 @@ def serve_forever():
         task_executed = False
         while not task_executed:
             node = nodes.next()
-            log.write('%s : %s -> %s' % (id, taskname, node['hostname']))
+            log.write('%s : %s -> %s' % (id, taskname, node['fqdn']))
             task_executed = helpers.remote_execute(db, node, id, taskid, taskname)
 
 def updatenodes(nodes):

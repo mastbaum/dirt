@@ -8,7 +8,7 @@ var Type = require('kanso/types').Type,
 
 exports.slave = new Type('slave', {
     fields: {
-        hostname: fields.string(),
+        fqdn: fields.string(),
         last_login: fields.string({required:false}),
         password: fields.string(),
         enabled: fields.boolean(),
@@ -21,11 +21,10 @@ exports.task = new Type('task', {
     fields: {
         name: fields.string(),
         created: fields.createdTime({required:false}),
-        slave_id: fields.string({required:false}),
-        checked_out: fields.string({required:false}),
+        started: fields.string({required:false}),
         completed: fields.string({required:false}),
-        success: fields.boolean({required:false}),
-        platform: fields.string()
+        slave: fields.string({required:false}),
+        platform: fields.string({required:false})
     },
     allow_extra_fields: true
 });
@@ -42,6 +41,5 @@ exports.record = new Type('record', {
             required: 'false'
         }),
     },
-    allow_extra_fields: true
 });
 

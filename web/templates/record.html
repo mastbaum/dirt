@@ -3,7 +3,11 @@
   <div style="display:table-row">
    <div style="display:table-cell;padding-right:15px;font-size:large;vertical-align:middle">
     {#pass}
-     <span style="color:black;font-weight:normal;padding:3px;background:#90ee90;border:solid 1px black">Passed</span>
+     {#inprogress}
+      <span style="color:black;font-weight:normal;padding:3px;background:#ddd;border:solid 1px black">In Progress</span>
+     {:else}
+      <span style="color:black;font-weight:normal;padding:3px;background:#90ee90;border:solid 1px black">Passed</span>
+     {/inprogress}
     {:else}
      <span style="font-weight:normal;padding:3px;background:pink;border:solid 1px black">Failed</span>
     {/pass}
@@ -29,18 +33,20 @@
   {?tasks}
    {#tasks record_id=_id}
    <tr>
-    <td><a href="{baseURL}/task/{name}?key=&#34;{name}&#34;">{name}</a></td>
-    <td>{slave_id}</td>
+    <td><a href="{baseURL}/task/{name}">{name}</a></td>
+    <td>{slave}</td>
     <td>{checked_out}</td>
     <td>{completed}</td>
     <td>
      <center>
      {#completed}
-      {#success}
-       <span title="Succeeded" style="display:block;background:green;width:12px;">&nbsp;</span>
-      {:else}
-       <span title="Failed" style="display:block;background:red;width:12px;">&nbsp;</span>
-      {/success}
+      {#results}
+       {?success}
+        <span title="Succeeded" style="display:block;background:green;width:12px;">&nbsp;</span>
+       {:else}
+        <span title="Failed" style="display:block;background:red;width:12px;">&nbsp;</span>
+       {/success}
+      {/results}
      {:else}
       {#checked_out}
       <span title="In Progress" style="display:block;background:blue;width:12px;">&nbsp;</span>

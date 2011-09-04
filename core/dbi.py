@@ -1,6 +1,7 @@
 # interfacing to couchdb
 
 import sys
+import time
 import couchdb
 from log import log
 
@@ -23,6 +24,7 @@ class DirtCouchDB():
         try:
             doc = self.db[id]
             doc['tasks'][taskid]['results'] = results
+            doc['tasks'][taskid]['completed'] = time.time()
             self.db.save(doc)
             log.write('Task %s:%s pushed to db' % (id, taskid))
         except couchdb.ResourceNotFound:
@@ -76,4 +78,7 @@ class DirtCouchDB():
             node = self.db[row.id]
             node['enabled'] = False
             self.db.save(node)
+
+    def __getitem__(self, id):
+        return self.db[id]
 
