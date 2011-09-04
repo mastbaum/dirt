@@ -4,6 +4,10 @@ import settings
 from log import log
 
 def remote_execute(db, node, id, taskid, taskname):
+    '''start a task on a remote host via ``execnet`` and set task start time
+    and node hostname in the database. we first run the ``ping`` task to
+    ensure the node is alive, and if that fails disable it in the db.
+    '''
     import time
     import execnet
     hostname = node['fqdn']

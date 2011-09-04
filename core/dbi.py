@@ -6,6 +6,9 @@ import couchdb
 from log import log
 
 class DirtCouchDB():
+    '''wrapper for ``couchdb`` that provides some additional dirt-specific
+    functions.
+    '''
     def __init__(self, host, dbname):
         couch = couchdb.Server(host)
         try:
@@ -35,6 +38,7 @@ class DirtCouchDB():
             log.write('Cannot push results to db, invalid task id %i for document %s' % (taskid, id))
 
     def save(self, doc):
+        '''save document in couchdb'''
         self.db.save(doc)
 
     def get_tasks(self):
@@ -72,9 +76,10 @@ class DirtCouchDB():
             nodes[row.key] = row.value
         return nodes
 
-    def disable_node(self, hostname):
-        for row in self.db.view('_design/dirt/_view/slaves_by_hostname', key=hostname):
-            log.write('Disabling node %s' % hostname)
+    def disable_node(self, fqdn):
+        '''set a node's ``enabled`` flag to false'''
+        for row in self.db.view('_design/dirt/_view/slaves_by_hostname', key=fqdn):
+            log.write('Disabling node %s' % fqdn)
             node = self.db[row.id]
             node['enabled'] = False
             self.db.save(node)

@@ -41,6 +41,9 @@ def log(filename, message, service_name=None, hoststamp=True, timestamp=True, co
 
 # Logging class so we can store some state for frequent logging
 class Log:
+    '''stores all the options for yelling.log, useful for frequent logging
+    without the boatload of options
+    '''
     def __init__(self, filename, service_name=None, hoststamp=True, timestamp=True, console=True):
         self.filename = filename
         self.service_name = service_name
@@ -48,6 +51,7 @@ class Log:
         self.timestamp = timestamp
         self.console = console
     def write(self, message):
+        '''write to log file'''
         log(self.filename, message, self.service_name, self.hoststamp, self.timestamp, self.console)
     def __str__(self):
         return '<yelling.Log, %s' % filename

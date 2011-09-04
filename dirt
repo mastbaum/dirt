@@ -10,6 +10,7 @@ import settings
 from core.log import log
 
 def help():
+    '''print help message'''
     print \
 '''Usage:
 
@@ -23,11 +24,15 @@ def help():
 '''
 
 def signal_handler(signal, frame):
+    '''handle SIGINTs gracefully'''
     log.write('Caught SIGINT (Ctrl-C), Exiting.')
     # do something smart
     sys.exit(0)
 
 def serve_forever():
+    '''when new tasks show up in the database, pair them up with the next
+    available node for execution.
+    '''
     from core import helpers
     from core import load_balance
     from core import dbi
@@ -46,6 +51,7 @@ def serve_forever():
             task_executed = helpers.remote_execute(db, node, id, taskid, taskname)
 
 def updatenodes(nodes):
+    '''update or add all hosts in list ``nodes`` in database host list'''
     from core import dbi
     from core import helpers
     db = dbi.DirtCouchDB(settings.couchdb_host, settings.couchdb_dbname)
