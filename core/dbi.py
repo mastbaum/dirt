@@ -23,17 +23,34 @@ class DirtCouchDB():
 
     def push_results(self, results, id, taskid):
         '''update record document with task results'''
-        # todo: key by name, not id
+        # todo: key by name, not id?
         try:
             doc = self.db[id]
             doc['tasks'][taskid]['results'] = results
             doc['tasks'][taskid]['completed'] = time.time()
+            if 'attachments' in results:
+                for attachment in results['attachments']:
+                    fname = '_'.join([id, str(taskid), attachment['filename']])
+                    if 'link_name' in attachment:
+                        if not 'attach_links' in doc['tasks'][taskid]['results']:
+                            doc['tasks'][taskid]['results']['attach_links'] = []
+                        doc['tasks'][taskid]['results']['attach_links'].append({'id': fname, 'name': attachment['link_name']}) 
             self.db.save(doc)
             log.write('Task %s:%s pushed to db' % (id, taskid))
+
+            # upload attachments and remove from results dictionary
+            doc = self.db[id]
+            if 'attachments' in results:
+                for attachment in results['attachments']:
+                    fname = '_'.join([id, str(taskid), attachment['filename']])
+                    self.db.put_attachment(doc, attachment['contents'], filename=fname)
+                    log.write('Task %s:%s: file %s attached' % (id, taskid, fname))
+
         except couchdb.ResourceNotFound:
             log.write('Cannot push results to db, document %s not found.' % id)
         except KeyError as key:
             log.write('Cannot push results to db, %s key missing in document %s' % (key, id))
+            raise
         except IndexError:
             log.write('Cannot push results to db, invalid task id %i for document %s' % (taskid, id))
 
