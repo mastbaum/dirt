@@ -35,6 +35,7 @@ exports.task = function (head, req) {
     var row, rows = [];
     while (row = getRow()) {
         task_name = row.value.task.name
+        row.value.task['results_string'] = JSON.stringify(row.value.task['results'], null, 1)
         rows.push(row);
     }
     var title = 'dirt :: Task Detail: ' + task_name;

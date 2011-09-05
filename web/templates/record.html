@@ -60,6 +60,8 @@
     </td>
     <td>
      {#completed}
+      <a href="index.html#results_{record_id}_{name}" class="boxy" title="Results">Results</a>
+      <div id="results_{record_id}_{name}" style="display:none;background-color:#f5deb3;color:black;padding:15px"><pre style="color:black">{results_string}</pre></div>
       {#attachments}
        <a href="#" onClick="window.location='../../../../{record_id}/{id}'">{name}</a><br/>
       {/attachments}
@@ -71,4 +73,10 @@
 </table>
 <br/><span style="font-size:7pt">Document ID: <a href="#" onClick="window.location='http://localhost:5984/_utils/document.html?dirt-kanso/{_id}'">{_id}</span> 
 </div>
+
+<script type='text/javascript'> 
+$(function() {
+  $('.boxy').boxy();
+});
+</script>
 

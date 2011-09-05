@@ -16,9 +16,9 @@ exports.record = function (doc, req) {
     var pass = true;
     var inprogress = false;
     for (task in doc.tasks) {
+        doc.tasks[task]['results_string'] = JSON.stringify(doc.tasks[task]['results'], null, 1)
         if (!doc.tasks[task]['results']['success']) {
             pass = false;
-            break;
         }
         if (!doc.tasks[task]['completed']) {
             inprogress = true;

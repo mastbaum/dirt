@@ -51,6 +51,8 @@
     </td>
     <td>
      {?value.task.completed}
+      <a href="index.html#results_{value.record_id}_{value.task.name}" class="boxy" title="Results">Results</a>
+      <div id="results_{value.record_id}_{value.task.name}" style="display:none;background-color:#f5deb3;color:black;padding:15px"><pre style="color:black">{value.task.results_string}</pre></div>
       {#value.task.attachments record_id=value.record_id}
        <a href="#" onClick="window.location='../../../../{record_id}/{id}'">{name}</a><br/>
       {/value.task.attachments}
@@ -64,4 +66,10 @@
   <h2>There are no tasks</h2>
  {/rows}
 </div>
+
+<script type='text/javascript'> 
+$(function() {
+  $('.boxy').boxy();
+});
+</script>
 
