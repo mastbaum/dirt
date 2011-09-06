@@ -24,7 +24,8 @@ exports.task = new Type('task', {
         started: fields.string({required:false}),
         completed: fields.string({required:false}),
         slave: fields.string({required:false}),
-        platform: fields.string({required:false})
+        platform: fields.string({required:false}),
+        record_id: fields.string({required: false})
     },
     allow_extra_fields: true
 });
@@ -35,10 +36,6 @@ exports.record = new Type('record', {
         title: fields.string(),
         description: fields.string({
             widget: widgets.textarea({cols: 40, rows: 10})
-        }),
-        tasks: fields.embedList({
-            type: exports.task,
-            required: 'false'
         }),
     },
 });

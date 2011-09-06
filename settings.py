@@ -7,7 +7,7 @@
 couchdb_host = 'http://localhost:5984'
 
 # couchdb database name
-couchdb_dbname = 'dirt-kanso'
+couchdb_dbname = 'dirt'
 
 
 ## Node configuration defaults

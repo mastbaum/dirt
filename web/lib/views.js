@@ -2,41 +2,62 @@
  * Show functions to be exported from the design doc.
  */
 
-exports.records_by_created = {
-    map: function (doc) {
-        if (doc.type == 'record') {
-            // percents passed, failed, etc., for overview page bar
-            var percents = {'failed': 0, 'success': 0, 'inprogress': 0, 'waiting': 0};
-            for (tasknum in doc.tasks) {
-                task = doc.tasks[tasknum];
-                if (task.completed) {
-                    if (task.results.success)
-                        percents['success'] += 1;
-                    else
-                        percents['failed'] += 1;
+// summary view with basic record information and "percent awesome" bar data
+exports.summary = {
+    map: function(doc) {
+        if (doc.type == "record")
+            emit([doc._id, 0], doc);
+        else if (doc.type == "task")
+            emit([doc.record_id, 1], doc)
+    },
+    // must use group_level 1 for meaningful output
+    reduce: function(keys, values) {
+        var ntasks = 0
+        output = {name: '', description: '', task_coumt: 0, percents: {success: 0, failed: 0, waiting: 0, inprogress: 0}};
+        for (idx in values) {
+            if (values[idx].type == "record")
+                if(!output.name) {
+                    output.name = values[idx].title;
+                    output.description = values[idx].description;
                 }
-                else {
-                    if (task.checked_out)
-                        percents['inprogress'] += 1;
+            if (values[idx].type == "task") {
+                ntasks += 1;
+                if (values[idx].completed) {
+                    if (values[idx].results.success)
+                        output.percents.success += 1;
                     else
-                        percents['waiting'] += 1;
+                        output.percents.failed += 1;
+                } else {
+                    if (values[idx].checked_out)
+                        output.percents.inprogress += 1;
+                    else
+                        output.percents.waiting += 1;
                 }
             }
-            for (item in percents)
-                percents[item] = percents[item] * 100 / doc.tasks.length;
+        }
+        output.task_count = ntasks;
+        for (item in output.percents)
+            output.percents[item] = output.percents[item] * 100 / ntasks;
+        return output;
+    }
+};
 
-            emit(doc._id, {title: doc.title, description: doc.description, task_count: doc.tasks.length, percents: percents});
+// get tasks for a given record
+exports.tasks_by_record = {
+    map: function(doc) {
+        if (doc.type == 'record')
+            emit([doc._id, 0], doc);
+        if (doc.type == 'task') {
+            emit([doc.record_id, 1], doc);
         }
     }
 };
 
+// get a given task for all records
 exports.tasks_by_name = {
     map: function(doc) {
-        if(doc.type == 'record') {
-            for(var i in doc.tasks) {
-                var task = doc.tasks[i];
-                emit([task.name], {'record_id': doc._id, 'record_title': doc.title, 'task': task});
-            }
+        if (doc.type == 'task') {
+            emit([doc.name], doc);
         }
     }
 };

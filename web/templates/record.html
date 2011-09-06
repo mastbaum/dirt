@@ -13,7 +13,7 @@
     {/pass}
    </div>
    <div style="display:table-cell">
-    <h1 style="color:black;">{title}</h1>
+    <h1 style="color:black;">{name}</h1>
    </div>
   </div>
  </div>
@@ -30,46 +30,46 @@
    <th style="text-align:center;">Status</th>
    <th style="text-align:center;">Results</th>
   </tr>
-  {?tasks}
-   {#tasks record_id=_id}
+  {?rows}
+   {#rows record_id=_id}
    <tr>
-    <td><a href="{baseURL}/task/{name}">{name}</a></td>
-    <td>{slave}</td>
-    <td>{checked_out}</td>
-    <td>{completed}</td>
+    <td><a href="{baseURL}/task/{name}">{value.name}</a></td>
+    <td>{value.slave}</td>
+    <td>{value.checked_out}</td>
+    <td>{value.completed}</td>
     <td>
      <center>
-     {#completed}
-      {#results}
-       {?success}
+     {#value.completed}
+      {#value.results}
+       {?value.success}
         <span title="Succeeded" style="display:block;background:green;width:12px;">&nbsp;</span>
        {:else}
         <span title="Failed" style="display:block;background:red;width:12px;">&nbsp;</span>
-       {/success}
-      {/results}
+       {/value.success}
+      {/value.results}
      {:else}
-      {#checked_out}
+      {#value.checked_out}
       <span title="In Progress" style="display:block;background:blue;width:12px;">&nbsp;</span>
       {:else}
-       {#created}
+       {#value.created}
         <span title="Waiting" style="display:block;background:gray;width:12px;">&nbsp;</span>
-       {/created}
-      {/checked_out}
-     {/completed}
+       {/value.created}
+      {/value.checked_out}
+     {/value.completed}
      </center>
     </td>
     <td>
-     {?completed}
+     {?value.completed}
       <a href="index.html#results_{record_id}_{name}" class="boxy" title="Results">Results</a>
       <div id="results_{record_id}_{name}" style="display:none;background-color:#f5deb3;color:black;padding:15px"><pre style="color:black">{results_string}</pre></div>
-      {#results.attach_links}
+      {#value.results.attach_links}
        <br/><a href="#" onClick="window.location='../../../../{record_id}/{id}'">{name}</a><br/>
-      {/results.attach_links}
-     {/completed}
+      {/value.results.attach_links}
+     {/value.completed}
     </td>
    </tr>
-   {/tasks}
-  {/tasks}
+   {/rows}
+  {/rows}
 </table>
 <br/><span style="font-size:7pt">Document ID: <a href="#" onClick="window.location='http://localhost:5984/_utils/document.html?dirt-kanso/{_id}'">{_id}</span> 
 </div>
