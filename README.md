@@ -37,3 +37,58 @@ Customization
 -------------
 For now, hack it. Evetually config scripts will make this easy.
 
+Installation
+------------
+**Dependencies**
+
+1. Apache CouchDB >= 1.1.0 (http://couchdb.apache.org)
+2. kanso (http://kansojs.org)
+3. execnet (Python module)
+4. jsonrpclib (Python module)
+
+**To install,**
+
+1. Modify settings in web/kanso.json to match your environment
+2. Push kanso CouchApp to the server:
+
+    $ cd web && kanso push dirt
+
+3. Install passphrase-less SSH keys on slave nodes
+4. Add slave nodes to database:
+
+    $ ./dirt updatenodes host1.example.com host2.otherplace.net (...)
+
+5. Start dirt server:
+
+    $ ./dirt serve
+
+6. Add records to the database via JSON-RPC, with task names matching Python modules in the tasks directory:
+
+<pre>
+$ curl -X PUT -d @foo.json server:port/add_record
+</pre>
+
+With `foo.json`:
+<pre>
+[
+    {
+        "_id": "r123",
+        "type": "record",
+        "description": "this is revision one two three"
+    },
+    {
+        "type": "task",
+        "record_id": "r123",
+        "name": "system_info",
+        "platform": "linux"
+    },
+    {
+        "type": "task",
+        "record_id": "r123",
+        "name": "heartbeat",
+        "platform": "linux"
+    }
+]
+</pre>
+
+Then, check the results in your web browser at the URL provided by `kanso push`.

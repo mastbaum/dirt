@@ -32,8 +32,8 @@ exports.task = new Type('task', {
 
 exports.record = new Type('record', {
     fields: {
-        created: fields.createdTime(),
         _id: fields.string(),
+        created: fields.createdTime(),
         description: fields.string({
             widget: widgets.textarea({cols: 40, rows: 10})
         }),
