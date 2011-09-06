@@ -21,42 +21,40 @@
   {?rows}
    {#rows}
    <tr>
-    <td><a href="{baseURL}/record/{value.record_id}">{value.record_title}</a></td>
+    <td><a href="{baseURL}/record/{value.record_id}">{value.record_id}</a></td>
     <td>{value.created}</td>
     <td>{value.slave}</td>
-    <td>{value.checked_out}</td>
+    <td>{value.started}</td>
     <td>{value.completed}</td>
     <td>
      <center>
-     {#value.task}
-      {#completed}
-       {#results}
-        {#success}
+      {?value.completed}
+       {#value.results}
+        {?success}
          <span title="Succeeded" style="display:block;background:green;width:12px;">&nbsp;</span>
         {:else}
          <span title="Failed" style="display:block;background:red;width:12px;">&nbsp;</span>
         {/success}
-       {/results}
+       {/value.results}
       {:else}
-       {#checked_out}
+       {#value.started}
        <span title="In Progress" style="display:block;background:blue;width:12px;">&nbsp;</span>
        {:else}
-        {#created}
+        {#value.created}
          <span title="Waiting" style="display:block;background:gray;width:12px;">&nbsp;</span>
-        {/created}
-       {/checked_out}
-      {/completed}
-     {/value.task}
+        {/value.created}
+       {/value.started}
+      {/value.completed}
      </center>
     </td>
     <td>
-     {?value.task.completed}
-      <a href="index.html#results_{value.record_id}_{value.task.name}" class="boxy" title="Results">Results</a>
-      <div id="results_{value.record_id}_{value.task.name}" style="display:none;background-color:#f5deb3;color:black;padding:15px"><pre style="color:black">{value.task.results_string}</pre></div>
-      {#value.task.attachments record_id=value.record_id}
+     {?value.completed}
+      <a href="task.html#results_{value.record_id}_{value._id}" class="boxy" title="Results">Results</a>
+      <div id="results_{value.record_id}_{value._id}" style="display:none;background-color:#f5deb3;color:black;padding:15px"><pre style="color:black">{results_string}</pre></div>
+      {#value.attachments record_id=value.record_id}
        <a href="#" onClick="window.location='../../../../{record_id}/{id}'">{name}</a><br/>
-      {/value.task.attachments}
-     {/value.task.completed}
+      {/value.attachments}
+     {/value.completed}
     </td>
    </tr>
    {/rows}

@@ -33,28 +33,28 @@
   {?rows}
    {#rows record_id=_id}
    <tr>
-    <td><a href="{baseURL}/task/{name}">{value.name}</a></td>
+    <td><a href="{baseURL}/task/{value.name}">{value.name}</a></td>
     <td>{value.slave}</td>
-    <td>{value.checked_out}</td>
+    <td>{value.started}</td>
     <td>{value.completed}</td>
     <td>
      <center>
-     {#value.completed}
+     {?value.completed}
       {#value.results}
-       {?value.success}
+       {?success}
         <span title="Succeeded" style="display:block;background:green;width:12px;">&nbsp;</span>
        {:else}
         <span title="Failed" style="display:block;background:red;width:12px;">&nbsp;</span>
-       {/value.success}
+       {/success}
       {/value.results}
      {:else}
-      {#value.checked_out}
+      {#value.started}
       <span title="In Progress" style="display:block;background:blue;width:12px;">&nbsp;</span>
       {:else}
        {#value.created}
         <span title="Waiting" style="display:block;background:gray;width:12px;">&nbsp;</span>
        {/value.created}
-      {/value.checked_out}
+      {/value.started}
      {/value.completed}
      </center>
     </td>

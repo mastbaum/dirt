@@ -25,7 +25,7 @@ exports.task = new Type('task', {
         completed: fields.string({required:false}),
         slave: fields.string({required:false}),
         platform: fields.string({required:false}),
-        record_id: fields.string({required: false})
+        record_id: fields.string()
     },
     allow_extra_fields: true
 });
@@ -33,7 +33,7 @@ exports.task = new Type('task', {
 exports.record = new Type('record', {
     fields: {
         created: fields.createdTime(),
-        title: fields.string(),
+        _id: fields.string(),
         description: fields.string({
             widget: widgets.textarea({cols: 40, rows: 10})
         }),

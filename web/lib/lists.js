@@ -37,14 +37,16 @@ exports.record = function (head, req) {
 
     // first row is record
     row = getRow();
-    name = row.value.title;
+    name = row.key[0];
     description = row.value.description;
 
     // subsequent are associated tasks
     while (row = getRow()) {
-        row['results_string'] = JSON.stringify(row.value.results, null, 1);
-        if (!row.value.results.success)
-            pass = false;
+        if ('results' in row.value) {
+            row['results_string'] = JSON.stringify(row.value.results, null, 1);
+            if (!row.value.results.success)
+                pass = false;
+        }
         if (!row.value.completed)
             inprogress = true;
         rows.push(row);
@@ -73,10 +75,12 @@ exports.record = function (head, req) {
 exports.task = function (head, req) {
     start({code: 200, headers: {'Content-Type': 'text/html'}});
 
+    var task_name = ''
     var row, rows = [];
     while (row = getRow()) {
         task_name = row.value.name
-        row.value['results_string'] = JSON.stringify(row.value.results, null, 1)
+        if ('results' in row.value)
+            row['results_string'] = JSON.stringify(row.value.results, null, 1)
         rows.push(row);
     }
     var title = 'dirt :: Task Detail: ' + task_name;

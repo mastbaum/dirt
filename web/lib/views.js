@@ -5,10 +5,10 @@
 // summary view with basic record information and "percent awesome" bar data
 exports.summary = {
     map: function(doc) {
-        if (doc.type == "record")
+        if (doc.type == 'record')
             emit([doc._id, 0], doc);
-        else if (doc.type == "task")
-            emit([doc.record_id, 1], doc)
+        if (doc.type == 'task')
+            emit([doc.record_id, 1], doc);
     },
     // must use group_level 1 for meaningful output
     reduce: function(keys, values) {
@@ -28,7 +28,7 @@ exports.summary = {
                     else
                         output.percents.failed += 1;
                 } else {
-                    if (values[idx].checked_out)
+                    if (values[idx].started)
                         output.percents.inprogress += 1;
                     else
                         output.percents.waiting += 1;
@@ -43,13 +43,13 @@ exports.summary = {
 };
 
 // get tasks for a given record
+// returns record row followed by associated tasks
 exports.tasks_by_record = {
     map: function(doc) {
-        if (doc.type == 'record')
-            emit([doc._id, 0], doc);
-        if (doc.type == 'task') {
-            emit([doc.record_id, 1], doc);
-        }
+    if (doc.type == 'record')
+        emit([doc._id, 0], doc);
+    if (doc.type == 'task')
+        emit([doc.record_id, 1], doc);
     }
 };
 
