@@ -9,6 +9,20 @@ dirt is a Python and kanso (CouchDB) application for oversight and tracking of r
 
 Source code is available at http://github.com/mastbaum/dirt.
 
+Quick Start Guide
+-----------------
+Want to see dirt in action, fast?
+
+First, set up a passphrase-less ssh key to localhost. Then do this::
+
+    $ export PYTHONPATH=/path/containing/dirt/package:$PYTHONPATH PATH=/path/to/dirt/executable:$PATH
+    $ dirt create myproject
+    $ cd myproject/web && kanso push myproject && kanso pushdata http://localhost:5984/myproject test_data.json && cd ..
+    $ dirt updatenodes localhost
+    $ dirt serve
+
+Visit the URL ``kanso push`` gave you and watch the results roll in.
+
 Documentation
 =============
 
@@ -17,8 +31,9 @@ Documentation
 
    intro
    basic
+   getting_started
    core
-   tasks
+   core_tasks
 
 Indices and tables
 ==================

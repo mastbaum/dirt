@@ -4,15 +4,21 @@ Basic Usage
 Command-line usage
 ------------------
 
-dirt can be run with one of two subcommands.
+dirt can be run with one of three subcommands.
 
-Run the dirt remote execution server, which will dole out unfinished tasks in the database to available execution hosts::
+Start a new dirt project::
 
-    $ ./dirt serve
+    $ dirt create projectname [database name]
+
+The database name is the same as the project name by default.
 
 Update stored system information on each host, adding the host to the database if necessary::
 
-    $ ./dirt updatenodes [host1] [host2] ...
+    $ dirt updatenodes [host1.example.com] [host2.othersite.org] ...
+
+Run the dirt remote execution server, which will dole out unfinished tasks in the database to available execution hosts::
+
+    $ dirt serve
 
 Using dirt as a module
 ----------------------
@@ -26,8 +32,8 @@ To get a list of nodes::
     Sep 04 03:17:44 neutralino dirt : Connected to db at http://localhost:5984/dirt
     >>> for fqdn in db.get_nodes():
     ..:    print fqdn
-    node1
-    node2
+    node1.example.com
+    node2.othersite.org
 
 Use ``execnet`` to run a task on a node::
 

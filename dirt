@@ -12,9 +12,6 @@ if sys.path[0] == '':
 else:
     sys.path.insert(0, '.')
 
-import settings
-from core.log import log
-
 def help():
     '''print help message'''
     print \
@@ -34,6 +31,8 @@ def help():
 
 def signal_handler(signal, frame):
     '''handle SIGINTs gracefully'''
+    import settings
+    from core.log import log
     log.write('Caught SIGINT (Ctrl-C), Exiting.')
     # do something smart
     sys.exit(0)
@@ -42,6 +41,8 @@ def serve_forever():
     '''when new tasks show up in the database, pair them up with the next
     available node for execution.
     '''
+    import settings
+    from core.log import log
     from core import helpers
     from core import load_balance
     from core import dbi
@@ -61,6 +62,8 @@ def serve_forever():
 
 def updatenodes(nodes):
     '''update or add all hosts in list ``nodes`` in database host list'''
+    import settings
+    from core.log import log
     from core import dbi
     from core import helpers
     db = dbi.DirtCouchDB(settings.couchdb_host, settings.couchdb_dbname)
@@ -71,7 +74,7 @@ def updatenodes(nodes):
 
 if __name__ == '__main__':
     print 'dirt v0.1'
-    print 'Project:', settings.couchdb_dbname, '\n'
+    #print 'Project:', settings.couchdb_dbname, '\n'
 
     if len(sys.argv) < 2:
         help()

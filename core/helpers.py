@@ -34,7 +34,7 @@ def remote_execute(db, node, id):
         else:
             log.write('Error connecting with host %s' % hostname)
             db.disable_node(hostname)
-            return None
+            return False
     except execnet.gateway.HostNotFound:
         log.write('Host %s not responding' % hostname)
         db.disable_node(hostname)

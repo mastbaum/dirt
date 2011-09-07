@@ -36,7 +36,7 @@ class DirtCouchDB():
                 try:
                     id = change['id']
                     try:
-                        if not self.db[id].has_key('results'):
+                        if not self.db[id].has_key('started'):
                             yield id
                     except KeyError:
                         continue

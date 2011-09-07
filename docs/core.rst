@@ -3,6 +3,13 @@ core API
 
 The ``core`` module contains all of dirt's internal functions.
 
+core.create
+-----------
+Routine used to create the skeleton directory structure for a new project
+
+.. automodule:: core.create
+   :members:
+
 core.dbi
 --------
 dirt's interface to the CouchDB database. All db interactions happen through a shared instance of the ``DirtCouchDB`` class.
