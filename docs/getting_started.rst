@@ -55,11 +55,13 @@ The recommended structure is::
         return {'success': success, 'sum': sum}
 
     if __name__ == '__channelexec__':
-        return execute()
+        channel.send(execute())
 
     if __name__ == '__main__':
         print execute()
 
+Attachments
+```````````
 Tasks can also return attachments. Simply include in the "results" dictionary another special key "attachments," which contains a list like this::
 
     'attachments': [
@@ -70,6 +72,24 @@ Tasks can also return attachments. Simply include in the "results" dictionary an
     ]
 
 If ``link_name`` is specified, a link is provided to that attachment on the results page.
+
+Arguments
+`````````
+It is also possible to pass keyword arguments to your task (for example, which revision number to check out). The basic syntax for the task module is::
+
+    def execute(foo, bar):
+        return {'success': True, 'foo': foo, 'bar': bar}
+
+    if __name__ == '__channelexec__':
+        kwargs = channel.receive()
+        results = execute(**kwargs)
+        channel.send(results)
+
+The task document must then include all needed arguments in a special key ``'kwargs'``, e.g.::
+
+    'kwargs': {'foo': 42, 'bar': 'baz'}
+
+An example is given in the ``tasks/examples`` subdirectory of a new project.
 
 Starting your project: an example
 ---------------------------------

@@ -22,6 +22,9 @@ def remote_execute(db, node, id):
                 taskname = doc['name']
                 task_module = __import__('tasks.%s' % taskname, fromlist=['tasks'])
                 ch = gw.remote_exec(task_module)
+                # send keyword arguments to remote process
+                if 'kwargs' in doc:
+                    ch.send(doc['kwargs'])
                 doc['started'] = time.time()
                 doc['slave'] = hostname
                 db.db.save(doc)
