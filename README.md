@@ -33,10 +33,6 @@ Tasks are run on remote hosts in one of two ways:
 
 2. JSON-RPC: A client script on the host pings the master server to request a task to process. This is useful for hosts behind firewalls, proxies, etc., which execnet cannot SSH to over the internet.
 
-Customization
--------------
-For now, hack it. Evetually config scripts will make this easy.
-
 Installation
 ------------
 **Dependencies**
@@ -74,19 +70,24 @@ With `foo.json`:
     {
         "_id": "r123",
         "type": "record",
-        "description": "this is revision one two three"
+        "description": "this is revision one two three",
+        "created": 1315347385
     },
     {
+        "_id": "2e3dabbff38ca7f6fa05c5a0cbbc95a4",
         "type": "task",
         "record_id": "r123",
         "name": "system_info",
-        "platform": "linux"
+        "platform": "linux",
+        "created": 1315347385
     },
     {
+        "_id": "2e3dabbff38ca7f6fa05c5a0cbbc9858",
         "type": "task",
         "record_id": "r123",
         "name": "heartbeat",
-        "platform": "linux"
+        "platform": "linux",
+        "created": 1315347385
     }
 ]
 </pre>

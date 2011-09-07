@@ -4,8 +4,14 @@
 #
 # Andy Mastbaum (amastbaum@gmail.com), August 2011
 
-import sys
+
 import signal
+import sys
+if sys.path[0] == '':
+    sys.path.insert(1, '.')
+else:
+    sys.path.insert(0, '.')
+
 import settings
 from core.log import log
 
@@ -21,6 +27,9 @@ def help():
   dirt updatenodes [host1] [host2] ...
   - Update stored system information on each host, adding the host to the
     database if necessary.
+
+  dirt create [project name] [db name (optional)]
+  - Create the skeleton directory structure for a new dirt project.
 '''
 
 def signal_handler(signal, frame):
@@ -61,6 +70,9 @@ def updatenodes(nodes):
     helpers.node_recon(nodes, db)
 
 if __name__ == '__main__':
+    print 'dirt v0.1'
+    print 'Project:', settings.couchdb_dbname, '\n'
+
     if len(sys.argv) < 2:
         help()
         sys.exit(1)
@@ -69,6 +81,15 @@ if __name__ == '__main__':
         serve_forever()
     elif sys.argv[1] == 'updatenodes':
         updatenodes(nodes = sys.argv[2:])
+    elif sys.argv[1] == 'create':
+        from core.create import create
+        if len(sys.argv) == 3:
+            create(sys.argv[2], sys.argv[2])
+        elif len(sys.argv) == 4:
+            create(sys.argv[2], sys.argv[3])
+        else:
+            help()
+            sys.exit(1)
     else:
         help()
         sys.exit(0)

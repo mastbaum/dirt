@@ -63,7 +63,7 @@
       <a href="index.html#results_{value._id}" class="boxy" title="Results">Results</a>
       <div id="results_{value._id}" style="display:none;background-color:#f5deb3;color:black;padding:15px"><pre style="color:black">{results_string}</pre></div>
       {#value.results.attach_links task_id=id}
-       <br/><a href="#" onClick="window.location='/dirt/{task_id}/{id}'">{name}</a><br/>
+       <br/><a href="#" onClick="window.location='/%%%{dbname}/{task_id}/{id}'">{name}</a><br/>
       {/value.results.attach_links}
      {/value.completed}
     </td>
@@ -71,7 +71,7 @@
    {/rows}
   {/rows}
 </table>
-<br/><span style="font-size:7pt">Document ID: <a href="#" onClick="window.location='http://localhost:5984/_utils/document.html?dirt/{_id}'">{_id}</span> 
+<br/><span style="font-size:7pt">Document ID: <a href="#" onClick="window.location='http://localhost:5984/_utils/document.html?%%%{dbname}/{_id}'">{_id}</span> 
 </div>
 
 <script type='text/javascript'> 

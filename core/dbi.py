@@ -3,6 +3,7 @@
 import sys
 import time
 import couchdb
+import settings
 from log import log
 
 class DirtCouchDB():
@@ -30,7 +31,7 @@ class DirtCouchDB():
         '''
         while(True):
             last_seq = 0
-            changes = self.db.changes(feed='continuous', since=last_seq, filter='dirt/task')
+            changes = self.db.changes(feed='continuous', since=last_seq, filter=settings.couchdb_dbname+'/task')
             for change in changes:
                 try:
                     id = change['id']
@@ -89,13 +90,13 @@ class DirtCouchDB():
     def get_nodes(self):
         '''query db to get slave node data'''
         nodes = {}
-        for row in self.db.view('_design/dirt/_view/slaves_by_hostname'):
+        for row in self.db.view('_design/'+settings.couchdb_dbname+'/_view/slaves_by_hostname'):
             nodes[row.key] = row.value
         return nodes
 
     def disable_node(self, fqdn):
         '''set a node's ``enabled`` flag to false'''
-        for row in self.db.view('_design/dirt/_view/slaves_by_hostname', key=fqdn):
+        for row in self.db.view('_design/'+settings.couchdb_dbname+'/_view/slaves_by_hostname', key=fqdn):
             log.write('Disabling node %s' % fqdn)
             node = self.db[row.id]
             node['enabled'] = False

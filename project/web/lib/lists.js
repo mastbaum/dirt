@@ -18,12 +18,12 @@ exports.index = function (head, req) {
 
     if (req.client) {
         $('#content').html(content);
-        document.title = 'dirt :: Overview';
+        document.title = '%%%{project} :: Overview';
     }
     else {
         return templates.render('base.html', req, {
             content: content,
-            title: 'dirt :: Overview'
+            title: '%%%{project} :: Overview'
         });
     }
 };
@@ -65,12 +65,12 @@ exports.record = function (head, req) {
 
     if (req.client) {
         $('#content').html(content);
-        document.title = 'dirt :: Overview';
+        document.title = '%%%{project} :: Overview';
     }
     else {
         return templates.render('base.html', req, {
             content: content,
-            title: 'dirt :: Overview'
+            title: '%%%{project} :: Overview'
         });
     }
 };
@@ -86,7 +86,7 @@ exports.task = function (head, req) {
             row['results_string'] = JSON.stringify(row.value.results, null, 1)
         rows.push(row);
     }
-    var title = 'dirt :: Task Detail: ' + task_name;
+    var title = '%%%{project} :: Task Detail: ' + task_name;
 
     var content = templates.render('task.html', req, {
         task_name: task_name,

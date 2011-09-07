@@ -13,7 +13,7 @@ def remote_execute(db, node, id):
     hostname = node['fqdn']
     try:
         # first, check if node is alive
-        ping_module = __import__('tasks.ping', fromlist=['tasks'])
+        ping_module = __import__('core_tasks.ping', fromlist=['core_tasks'])
         gw = execnet.makegateway('ssh=%s' % hostname)
         ch = gw.remote_exec(ping_module)
         if ch.receive():
@@ -46,7 +46,7 @@ def node_recon(nodelist, db, interactive=True):
     slave nodes' db entries.
     '''
     import execnet
-    from tasks import system_info
+    from core_tasks import system_info
     nodes = db.get_nodes()
     for node in nodelist:
         log.write('Connecting to host %s' % node)

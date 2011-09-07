@@ -1,0 +1,73 @@
+<div>
+ <div class="box" style="display:table;border">
+  <div style="display:table-row">
+   <div style="display:table-cell">
+    <h1 style="color:black;">{task_name}</h1>
+    <h3 style="color:black;margin-top:-6px">Task History</h3>
+   </div>
+  </div>
+ </div>
+
+ <table width=65% style="text-align:center">
+  <tr>
+   <th style="text-align:center;">Record</th>
+   <th style="text-align:center;">Created</th>
+   <th style="text-align:center;">Slave</th>
+   <th style="text-align:center;">Checked Out</th>
+   <th style="text-align:center;">Completed</th>
+   <th style="text-align:center;">Status</th>
+   <th style="text-align:center;">Results</th>
+  </tr>
+  {?rows}
+   {#rows}
+   <tr>
+    <td><a href="{baseURL}/record/{value.record_id}">{value.record_id}</a></td>
+    <td>{value.created}</td>
+    <td>{value.slave}</td>
+    <td>{value.started}</td>
+    <td>{value.completed}</td>
+    <td>
+     <center>
+      {?value.completed}
+       {#value.results}
+        {?success}
+         <span title="Succeeded" style="display:block;background:green;width:12px;">&nbsp;</span>
+        {:else}
+         <span title="Failed" style="display:block;background:red;width:12px;">&nbsp;</span>
+        {/success}
+       {/value.results}
+      {:else}
+       {#value.started}
+       <span title="In Progress" style="display:block;background:blue;width:12px;">&nbsp;</span>
+       {:else}
+        {#value.created}
+         <span title="Waiting" style="display:block;background:gray;width:12px;">&nbsp;</span>
+        {/value.created}
+       {/value.started}
+      {/value.completed}
+     </center>
+    </td>
+    <td>
+     {?value.completed}
+      <a href="task.html#results_{value._id}" class="boxy" title="Results">Results</a>
+      <div id="results_{value._id}" style="display:none;background-color:#f5deb3;color:black;padding:15px"><pre style="color:black">{results_string}</pre></div>
+      {#value.attachments record_id=value.record_id}
+       <a href="#" onClick="window.location='../../../../{record_id}/{id}'">{name}</a><br/>
+      {/value.attachments}
+     {/value.completed}
+    </td>
+   </tr>
+   {/rows}
+  </table>
+ {:else}
+  </table>
+  <h2>There are no tasks</h2>
+ {/rows}
+</div>
+
+<script type='text/javascript'> 
+$(function() {
+  $('.boxy').boxy();
+});
+</script>
+

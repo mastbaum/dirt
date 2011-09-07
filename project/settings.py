@@ -1,13 +1,13 @@
-# dirt Configuration
+# %%%project Configuration
 
 # Project name
-project_name = 'dirt'
+project_name = '%%%{project}'
 
 ## Database configuration
 # URL of couchdb server
 couchdb_host = 'http://localhost:5984'
 # couchdb database name
-couchdb_dbname = 'dirt'
+couchdb_dbname = '%%%{project}'
 
 ## Node configuration defaults
 # When adding a new node, enable it by default?
@@ -17,5 +17,5 @@ node_password_default = 'pw123'
 
 ## Logging configuration
 # Log file name
-log_file = 'dirt.log'
+log_file = '%%%{project}.log'
 

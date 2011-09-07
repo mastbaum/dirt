@@ -1,0 +1,32 @@
+<h1>All Records</h1>
+
+<div>
+ <table width=65%>
+  <tr>
+   <th>Record ID</th>
+   <th>Comments</th>
+   <th>#</th>
+   <th>Task Status</th>
+  </tr>
+  {?rows}
+   {#rows}
+     <tr>
+      <td style="text-align:center;"><a href="{baseURL}/record/{key}">{key}</a></td>
+      <td style="text-align:left;">{value.description}</td>
+      <td style="text-align:center;">{value.task_count}</td>
+      <td width=65%>
+       <div width=100%>
+        <span title="Succeeded: {value.percents.success}%" style="display:inline-block;width:{value.percents.success}%;background:green;margin:-3px;">&nbsp;</span>
+        <span title="Failed: {value.percents.failed}%" style="display:inline-block;width:{value.percents.failed}%;background:red;margin:-3px;">&nbsp;</span>
+        <span title="In Progress: {value.percents.inprogress}%" style="display:inline-block;width:{value.percents.inprogress}%;background:blue;margin:-3px;">&nbsp;</span>
+        <span title="Waiting: {value.percents.waiting}%" style="display:inline-block;width:{value.percents.waiting}%;background:gray;margin:-3px;">&nbsp;</span>
+       </div>
+      </td>
+     </tr>
+   {/rows}
+ </table>
+ {:else}
+  <h2>There are no records</h2>
+ {/rows}
+</div>
+
