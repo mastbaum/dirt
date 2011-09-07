@@ -62,7 +62,7 @@ Installation
 
     $ ./dirt serve
 
-6. Add records to the database via JSON-RPC, with task names matching Python modules in the tasks directory:
+6. Add records to the database via JSON-RPC or `kanso pushdata`, with task names matching Python modules in the tasks directory:
 
 <pre>
 $ curl -X PUT -d @foo.json server:port/add_record

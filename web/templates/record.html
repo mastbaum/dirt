@@ -62,8 +62,8 @@
      {?value.completed}
       <a href="index.html#results_{value._id}" class="boxy" title="Results">Results</a>
       <div id="results_{value._id}" style="display:none;background-color:#f5deb3;color:black;padding:15px"><pre style="color:black">{results_string}</pre></div>
-      {#value.results.attach_links}
-       <br/><a href="#" onClick="window.location='../../../../{record_id}/{id}'">{name}</a><br/>
+      {#value.results.attach_links task_id=id}
+       <br/><a href="#" onClick="window.location='/dirt/{task_id}/{id}'">{name}</a><br/>
       {/value.results.attach_links}
      {/value.completed}
     </td>

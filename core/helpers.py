@@ -3,7 +3,7 @@
 import settings
 from log import log
 
-def remote_execute(db, node, id, taskid, taskname):
+def remote_execute(db, node, id):
     '''start a task on a remote host via ``execnet`` and set task start time
     and node hostname in the database. we first run the ``ping`` task to
     ensure the node is alive, and if that fails disable it in the db.
@@ -18,14 +18,15 @@ def remote_execute(db, node, id, taskid, taskname):
         ch = gw.remote_exec(ping_module)
         if ch.receive():
             try:
+                doc = db[id]
+                taskname = doc['name']
                 task_module = __import__('tasks.%s' % taskname, fromlist=['tasks'])
                 ch = gw.remote_exec(task_module)
-                doc = db[id]
-                doc['tasks'][taskid]['checked_out'] = time.time()
-                doc['tasks'][taskid]['slave'] = hostname
+                doc['started'] = time.time()
+                doc['slave'] = hostname
                 db.db.save(doc)
                 # use lambda to provide arguments to callback
-                push_args = {'id': id, 'taskid': taskid}
+                push_args = {'id': id}
                 ch.setcallback(callback = lambda(results): db.push_results(results, **push_args))
             except ImportError:
                 log.write('Task %s not found' % taskname)

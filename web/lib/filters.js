@@ -2,8 +2,9 @@
  * Filter functions to be exported from the design doc.
  */
 
-exports.record = function(doc, req) {
-    if (doc.type == 'record')
+// used for changes feed
+exports.task = function(doc, req) {
+    if (doc.type == 'task')
         return true;
     else
         return false;

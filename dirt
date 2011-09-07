@@ -43,12 +43,12 @@ def serve_forever():
     nodes = load_balance.round_robin(db)
     tasks = db.get_tasks()
 
-    for id, taskname, taskid in tasks:
+    for id in tasks:
         task_executed = False
         while not task_executed:
             node = nodes.next()
-            log.write('%s : %s -> %s' % (id, taskname, node['fqdn']))
-            task_executed = helpers.remote_execute(db, node, id, taskid, taskname)
+            log.write('%s -> %s' % (id, node['fqdn']))
+            task_executed = helpers.remote_execute(db, node, id)
 
 def updatenodes(nodes):
     '''update or add all hosts in list ``nodes`` in database host list'''

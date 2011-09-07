@@ -21,43 +21,6 @@ class DirtCouchDB():
             log.write('Error connecting to database')
             sys.exit(1)
 
-    def push_results(self, results, id, taskid):
-        '''update record document with task results'''
-        # todo: key by name, not id?
-        try:
-            doc = self.db[id]
-            doc['tasks'][taskid]['results'] = results
-            doc['tasks'][taskid]['completed'] = time.time()
-            if 'attachments' in results:
-                for attachment in results['attachments']:
-                    fname = '_'.join([id, str(taskid), attachment['filename']])
-                    if 'link_name' in attachment:
-                        if not 'attach_links' in doc['tasks'][taskid]['results']:
-                            doc['tasks'][taskid]['results']['attach_links'] = []
-                        doc['tasks'][taskid]['results']['attach_links'].append({'id': fname, 'name': attachment['link_name']}) 
-            self.db.save(doc)
-            log.write('Task %s:%s pushed to db' % (id, taskid))
-
-            # upload attachments and remove from results dictionary
-            doc = self.db[id]
-            if 'attachments' in results:
-                for attachment in results['attachments']:
-                    fname = '_'.join([id, str(taskid), attachment['filename']])
-                    self.db.put_attachment(doc, attachment['contents'], filename=fname)
-                    log.write('Task %s:%s: file %s attached' % (id, taskid, fname))
-
-        except couchdb.ResourceNotFound:
-            log.write('Cannot push results to db, document %s not found.' % id)
-        except KeyError as key:
-            log.write('Cannot push results to db, %s key missing in document %s' % (key, id))
-            raise
-        except IndexError:
-            log.write('Cannot push results to db, invalid task id %i for document %s' % (taskid, id))
-
-    def save(self, doc):
-        '''save document in couchdb'''
-        self.db.save(doc)
-
     def get_tasks(self):
         '''more persistent wrapper for couchdb changes. the couchdb package
         nicely provides the changes feed as a generator, but it terminates
@@ -67,14 +30,13 @@ class DirtCouchDB():
         '''
         while(True):
             last_seq = 0
-            changes = self.db.changes(feed='continuous', since=last_seq, filter='dirt/record')
+            changes = self.db.changes(feed='continuous', since=last_seq, filter='dirt/task')
             for change in changes:
                 try:
                     id = change['id']
                     try:
-                        for taskid in range(len(self.db[id]['tasks'])):
-                            if not self.db[id]['tasks'][taskid].has_key('results'):
-                                yield id, self.db[id]['tasks'][taskid]['name'], taskid
+                        if not self.db[id].has_key('results'):
+                            yield id
                     except KeyError:
                         continue
                 except KeyError:
@@ -84,10 +46,48 @@ class DirtCouchDB():
                     except KeyError:
                         continue
                 except couchdb.http.ResourceNotFound:
+                    # sometimes this happens when the feed terminates
                     continue
 
+    def push_results(self, results, id):
+        '''update task document with results'''
+        try:
+            doc = self.db[id]
+            doc['results'] = results
+            doc['completed'] = time.time()
+            if 'attachments' in results:
+                # if a link name is specified, put a link next to results on the web page
+                for attachment in results['attachments']:
+                    if 'link_name' in attachment:
+                        if not 'attach_links' in doc['results']:
+                            doc['results']['attach_links'] = []
+                        doc['results']['attach_links'].append({'id': attachment['filename'], 'name': attachment['link_name']}) 
+            self.db.save(doc)
+            log.write('Task %s pushed to db' % id)
+
+            # upload attachments
+            doc = self.db[id]
+            if 'attachments' in results:
+                for attachment in results['attachments']:
+                    self.db.put_attachment(doc, attachment['contents'], filename=attachment['filename'])
+                    log.write('Task %s: file %s attached' % (id, attachment['filename']))
+
+            # remove attachments from results dictionary
+            doc = self.db[id]
+            if 'attachments' in doc['results']:
+                del doc['results']['attachments']
+                self.db.save(doc)
+
+        except couchdb.ResourceNotFound:
+            log.write('Cannot push results to db, document %s not found.' % id)
+        except KeyError as key:
+            log.write('Cannot push results to db, %s key missing in document %s' % (key, id))
+            raise
+        except IndexError:
+            log.write('Cannot push results to db, invalid task id %i for document %s' % (taskid, id))
+
     def get_nodes(self):
-        '''query couch to get slave node data'''
+        '''query db to get slave node data'''
         nodes = {}
         for row in self.db.view('_design/dirt/_view/slaves_by_hostname'):
             nodes[row.key] = row.value
@@ -102,5 +102,10 @@ class DirtCouchDB():
             self.db.save(node)
 
     def __getitem__(self, id):
+        '''get item from the db by id'''
         return self.db[id]
+
+    def save(self, doc):
+        '''save a document in the db'''
+        self.db.save(doc)
 
