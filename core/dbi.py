@@ -50,9 +50,18 @@ class DirtCouchDB():
                     # sometimes this happens when the feed terminates
                     continue
 
-    def push_results(self, results, id):
+    def push_results(self, results, id, node):
         '''update task document with results'''
+        node['active'] = False
+        self.db.save(node)
         try:
+            # upload attachments
+            doc = self.db[id]
+            if 'attachments' in results:
+                for attachment in results['attachments']:
+                    self.db.put_attachment(doc, attachment['contents'], filename=attachment['filename'])
+                    log.write('Task %s: file %s attached' % (id, attachment['filename']))
+
             doc = self.db[id]
             doc['results'] = results
             doc['completed'] = time.time()
@@ -62,22 +71,10 @@ class DirtCouchDB():
                     if 'link_name' in attachment:
                         if not 'attach_links' in doc['results']:
                             doc['results']['attach_links'] = []
-                        doc['results']['attach_links'].append({'id': attachment['filename'], 'name': attachment['link_name']}) 
+                        doc['results']['attach_links'].append({'id': attachment['filename'], 'name': attachment['link_name']})
+            del doc['results']['attachments']
             self.db.save(doc)
             log.write('Task %s pushed to db' % id)
-
-            # upload attachments
-            doc = self.db[id]
-            if 'attachments' in results:
-                for attachment in results['attachments']:
-                    self.db.put_attachment(doc, attachment['contents'], filename=attachment['filename'])
-                    log.write('Task %s: file %s attached' % (id, attachment['filename']))
-
-            # remove attachments from results dictionary
-            doc = self.db[id]
-            if 'attachments' in doc['results']:
-                del doc['results']['attachments']
-                self.db.save(doc)
 
         except couchdb.ResourceNotFound:
             log.write('Cannot push results to db, document %s not found.' % id)
