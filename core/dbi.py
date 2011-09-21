@@ -2,8 +2,10 @@
 
 import sys
 import time
+import socket
 import couchdb
 import settings
+import yelling
 from log import log
 
 class DirtCouchDB():
@@ -75,6 +77,19 @@ class DirtCouchDB():
             del doc['results']['attachments']
             self.db.save(doc)
             log.write('Task %s pushed to db' % id)
+
+            # email notification for failed test
+            if doc['success'] = False and len(settings.notify_list) > 0:
+                doctype = 'task'
+                if 'kwargs' in doc and 'testname' in doc['kwargs']:
+                    doctype = doc['kwargs']['testname']
+                else:
+                    doctype = doc['name']
+                reason = 'none'
+                if 'reason' in results:
+                    reason = results['reason']
+                message = '''An automated build test run by the %s server on host %s failed.\n\nType: %s\nDocument ID: %s\nNode: %s\nReason: %s\n\nThis is an automated email. Please do not reply.''' % (settings.project_name, socket.getfqdn(), doctype, id, reason)
+                yelling.email(notify_list, '[%s]: task failure' % settings.project_name, message)
 
         except couchdb.ResourceNotFound:
             log.write('Cannot push results to db, document %s not found.' % id)

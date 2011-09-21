@@ -18,4 +18,6 @@ node_password_default = 'pw123'
 ## Logging configuration
 # Log file name
 log_file = '%%%{project}.log'
+# Email addresses to notify if a test fails
+notify_list = []
 
