@@ -14,6 +14,7 @@ def remote_execute(db, node, id):
     try:
         # first, check if node is alive
         node['active'] = True
+        node_id = node['_id']
         db.save(node)
         ping_module = __import__('core_tasks.ping', fromlist=['core_tasks'])
         gw = execnet.makegateway('ssh=%s' % hostname)
@@ -31,7 +32,7 @@ def remote_execute(db, node, id):
                 doc['slave'] = hostname
                 db.db.save(doc)
                 # use lambda to provide arguments to callback
-                push_args = {'id': id, 'node': node}
+                push_args = {'id': id, 'node_id': node_id}
                 ch.setcallback(callback = lambda(results): db.push_results(results, **push_args))
             except ImportError:
                 log.write('Task %s not found' % taskname)

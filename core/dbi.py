@@ -50,8 +50,9 @@ class DirtCouchDB():
                     # sometimes this happens when the feed terminates
                     continue
 
-    def push_results(self, results, id, node):
+    def push_results(self, results, id, node_id):
         '''update task document with results'''
+        node = self.db[node_id]
         node['active'] = False
         self.db.save(node)
         try:
