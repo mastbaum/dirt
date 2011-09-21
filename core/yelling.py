@@ -15,8 +15,9 @@ import socket
 import smtplib
 import datetime
 import urllib
+import settings
 
-smtp_server = 'localhost'
+smtp_server = settings.smtp_server
 
 # Log to file
 def log(filename, message, service_name=None, hoststamp=True, timestamp=True, console=True):

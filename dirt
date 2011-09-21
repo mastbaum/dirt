@@ -34,7 +34,6 @@ def signal_handler(signal, frame):
     import settings
     from core.log import log
     log.write('Caught SIGINT (Ctrl-C), Exiting.')
-    # do something smart
     sys.exit(0)
 
 def serve_forever():
@@ -74,7 +73,6 @@ def updatenodes(nodes):
 
 if __name__ == '__main__':
     print 'dirt v0.1'
-    #print 'Project:', settings.couchdb_dbname, '\n'
 
     if len(sys.argv) < 2:
         help()
