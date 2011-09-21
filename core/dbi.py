@@ -80,7 +80,7 @@ class DirtCouchDB():
             log.write('Task %s pushed to db' % id)
 
             # email notification for failed test
-            if doc['success'] = False and len(settings.notify_list) > 0:
+            if results['success'] == False and len(settings.notify_list) > 0:
                 doctype = 'task'
                 if 'kwargs' in doc and 'testname' in doc['kwargs']:
                     doctype = doc['kwargs']['testname']

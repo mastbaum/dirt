@@ -7,4 +7,5 @@ node_enable_default = True
 node_password_default = 'pw123'
 log_file = 'dirt.log'
 notify_list = []
+smtp_server = ''
 

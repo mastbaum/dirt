@@ -17,7 +17,16 @@ import datetime
 import urllib
 import settings
 
-smtp_server = settings.smtp_server
+try:
+    if settings.smtp_server == '':
+        raise NameError
+    smtp_server = settings.smtp_server
+except NameError:
+    # no smtp server, no email
+    if len(settings.notify_list) == 0:
+        pass
+    else:
+        print 'Warning: notify_list specified with no smtp server defined. Notifications will not be sent.'
 
 # Log to file
 def log(filename, message, service_name=None, hoststamp=True, timestamp=True, console=True):
@@ -66,6 +75,7 @@ def email(recipients, subject, message, sender=None):
         username = getpass.getuser()
         hostname = socket.gethostname()
         sender = '%s@%s' % (username, hostname)
+    message = ('Subject: %s' % subject) + '\n\n' + message
     try:
         smtp = smtplib.SMTP(smtp_server)
         smtp.sendmail(sender, recipients, message)
