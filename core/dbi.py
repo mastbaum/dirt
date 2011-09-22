@@ -86,11 +86,11 @@ class DirtCouchDB():
                     doctype = doc['kwargs']['testname']
                 else:
                     doctype = doc['name']
-                reason = 'none'
+                reason = 'n/a'
                 if 'reason' in results:
                     reason = results['reason']
                 message = '''An automated build test run by the %s server on host %s failed.\n\nType: %s\nDocument ID: %s\nNode: %s\nReason: %s\n\nThis is an automated email. Please do not reply.''' % (settings.project_name, socket.getfqdn(), doctype, id, node['fqdn'], reason)
-                yelling.email(settings.notify_list, '[%s]: task failure' % settings.project_name, message)
+                yelling.email(settings.notify_list, '[%s] task failure' % settings.project_name, message)
 
         except couchdb.ResourceNotFound:
             log.write('Cannot push results to db, document %s not found.' % id)
