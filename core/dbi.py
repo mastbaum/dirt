@@ -16,18 +16,22 @@ class DirtCouchDB():
     def __init__(self, host, dbname):
         couch = couchdb.Server(host)
         try:
-            if couch.version() < '1.1.0':
-                log.write('Error: couchdb version >= 1.1.0 required')
-                sys.exit(1)
             try:
+                if couch.version() < '1.1.0':
+                    log.write('Error: couchdb version >= 1.1.0 required')
+                    sys.exit(1)
                 self.db = couch[dbname]
-            except couchdb.Unauthorized:
+            except couchdb.http.Unauthorized:
                 print 'Authentication required for CouchDB database at', host + '/' + dbname
                 couch.resource.credentials = (raw_input('Username: '), getpass.getpass('Password: '))
+                if couch.version() < '1.1.0':
+                    log.write('Error: couchdb version >= 1.1.0 required')
+                    sys.exit(1)
                 self.db = couch[dbname]
             log.write('Connected to db at %s/%s' % (host, dbname))
         except Exception:
             log.write('Error connecting to database')
+            raise
             sys.exit(1)
 
     def get_tasks(self):
@@ -39,7 +43,7 @@ class DirtCouchDB():
         '''
         while(True):
             last_seq = 0
-            changes = self.db.changes(feed='continuous', since=last_seq, filter=settings.couchdb_dbname+'/task')
+            changes = self.db.changes(feed='continuous', since=last_seq, filter=settings.project_name+'/task')
             for change in changes:
                 try:
                     id = change['id']
@@ -81,7 +85,7 @@ class DirtCouchDB():
                         if not 'attach_links' in doc['results']:
                             doc['results']['attach_links'] = []
                         doc['results']['attach_links'].append({'id': attachment['filename'], 'name': attachment['link_name']})
-            del doc['results']['attachments']
+                del doc['results']['attachments']
             self.db.save(doc)
             log.write('Task %s pushed to db' % id)
 
@@ -109,13 +113,13 @@ class DirtCouchDB():
     def get_nodes(self):
         '''query db to get slave node data'''
         nodes = {}
-        for row in self.db.view('_design/'+settings.couchdb_dbname+'/_view/slaves_by_hostname'):
+        for row in self.db.view('_design/'+settings.project_name+'/_view/slaves_by_hostname'):
             nodes[row.key] = row.value
         return nodes
 
     def disable_node(self, fqdn):
         '''set a node's ``enabled`` flag to false'''
-        for row in self.db.view('_design/'+settings.couchdb_dbname+'/_view/slaves_by_hostname', key=fqdn):
+        for row in self.db.view('_design/'+settings.project_name+'/_view/slaves_by_hostname', key=fqdn):
             log.write('Disabling node %s' % fqdn)
             node = self.db[row.id]
             node['enabled'] = False
