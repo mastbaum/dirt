@@ -3,6 +3,7 @@
 import sys
 import time
 import socket
+import getpass
 import couchdb
 import settings
 import yelling
@@ -18,7 +19,12 @@ class DirtCouchDB():
             if couch.version() < '1.1.0':
                 log.write('Error: couchdb version >= 1.1.0 required')
                 sys.exit(1)
-            self.db = couch[dbname]
+            try:
+                self.db = couch[dbname]
+            except couchdb.Unauthorized:
+                print 'Authentication required for CouchDB database at', host + '/' + dbname
+                couch.resource.credentials = (raw_input('Username: '), getpass.getpass('Password: '))
+                self.db = couch[dbname]
             log.write('Connected to db at %s/%s' % (host, dbname))
         except Exception:
             log.write('Error connecting to database')
