@@ -6,8 +6,8 @@ import socket
 import getpass
 import couchdb
 import settings
-import yelling
-from log import log
+import dirt.core.yelling
+from dirt.core.log import log
 
 class DirtCouchDB():
     '''wrapper for ``couchdb`` that provides some additional dirt-specific

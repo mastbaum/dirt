@@ -20,4 +20,6 @@ node_password_default = 'pw123'
 log_file = '%%%{project}.log'
 # Email addresses to notify if a test fails
 notify_list = []
+# SMTP server is required for sending email notifications
+smtp_server = ''
 

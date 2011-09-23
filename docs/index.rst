@@ -5,7 +5,7 @@
 
 Introduction
 ============
-dirt is a Python and kanso (CouchDB) application for oversight and tracking of remotely-executed jobs.
+dirt is a Python and `kanso <http://kansojs.org/>`_ (CouchApp) application for oversight and tracking of remotely-executed jobs.
 
 Source code is available at http://github.com/mastbaum/dirt.
 
@@ -15,13 +15,21 @@ Want to see dirt in action, fast?
 
 First, set up a passphrase-less ssh key to localhost. Then do this::
 
-    $ export PYTHONPATH=/path/containing/dirt/package:$PYTHONPATH PATH=/path/to/dirt/executable:$PATH
+    $ cd dirt && python setup.py install
     $ dirt create myproject
     $ cd myproject/web && kanso push myproject && kanso pushdata http://localhost:5984/myproject test_data.json && cd ..
     $ dirt updatenodes localhost
     $ dirt serve
 
 Visit the URL ``kanso push`` gave you and watch the results roll in.
+
+Installation
+------------
+``dirt`` is packaged for easy installation with ``setuptools``::
+
+    $ git clone git://github.com/mastbaum/dirt.git
+    $ cd dirt
+    $ python setup.py install
 
 Documentation
 =============

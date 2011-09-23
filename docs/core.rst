@@ -1,54 +1,54 @@
 core API
 ========
 
-The ``core`` module contains all of dirt's internal functions.
+The ``dirt.core`` module contains all of dirt's internal functions.
 
-core.create
------------
+dirt.core.create
+----------------
 Routine used to create the skeleton directory structure for a new project
 
-.. automodule:: core.create
+.. automodule:: dirt.core.create
    :members:
 
-core.dbi
---------
+dirt.core.dbi
+-------------
 dirt's interface to the CouchDB database. All db interactions happen through a shared instance of the ``DirtCouchDB`` class.
 
-.. automodule:: core.dbi
+.. automodule:: dirt.core.dbi
    :members:
 
-core.helpers
-------------
+dirt.core.helpers
+-----------------
 Various helper functions
 
-.. automodule:: core.helpers
+.. automodule:: dirt.core.helpers
    :members:
 
-core.load_balance
------------------
+dirt.core.load_balance
+----------------------
 Load-balancing between nodes is achieved with Python generators that yield the next node on which to execute something.
 
-.. automodule:: core.load_balance
+.. automodule:: dirt.core.load_balance
    :members:
 
-core.log
---------
-``core.log`` creates a singleton ``yelling.Log`` instance ``core.log.log``, used for log output throughout dirt.
+dirt.core.log
+-------------
+``dirt.core.log`` creates a singleton ``yelling.Log`` instance ``dirt.core.log.log``, used for log output throughout dirt.
 
-.. automodule:: core.log
+.. automodule:: dirt.core.log
    :members:
 
-core.yelling
-------------
+dirt.core.yelling
+-----------------
 Logging is done with the ``yelling`` module, available at https://github.com/mastbaum/yelling.
 
-All logging should happen through ``core.log.log``, which is a ``yelling`` Log object:
+All logging should happen through ``dirt.core.log.log``, which is a ``yelling`` Log object:
 
-.. autoclass:: core.yelling.Log
+.. autoclass:: dirt.core.yelling.Log
    :members:
 
 Other available ``yelling`` functions include:
 
-.. automodule:: core.yelling
+.. automodule:: dirt.core.yelling
    :members:
 

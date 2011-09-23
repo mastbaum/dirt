@@ -95,6 +95,8 @@ Starting your project: an example
 ---------------------------------
 For an example, let's build a minimal build testing system.
 
+To see a complete CI system implemented with dirt, check out `pytunia <http://github.com/mastbaum/pytunia>`_.
+
 Starting the project
 ````````````````````
 

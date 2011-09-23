@@ -27,7 +27,7 @@ dirt and its submodules can also be used in Python.
 
 To get a list of nodes::
 
-    >>> from core import dbi
+    >>> from dirt.core import dbi
     >>> db = dbi.DirtCouchDB('http://localhost:5984', 'dirt')
     Sep 04 03:17:44 neutralino dirt : Connected to db at http://localhost:5984/dirt
     >>> for fqdn in db.get_nodes():
@@ -39,9 +39,9 @@ Use ``execnet`` to run a task on a node::
 
     >>> host = 'localhost'
     >>> import execnet
-    >>> from tasks import heartbeat
+    >>> from tasks.examples import simple
     >>> gw = execnet.makegateway('ssh=%s' % host)
-    >>> ch = gw.remote_exec(heartbeat)
+    >>> ch = gw.remote_exec(simple)
     >>> ch.receive()
     {'success': True}    
 

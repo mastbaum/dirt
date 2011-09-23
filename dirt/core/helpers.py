@@ -1,7 +1,7 @@
 # these should be popped to different modules eventually
 
 import settings
-from log import log
+from dirt.core.log import log
 
 def remote_execute(db, node, id):
     '''start a task on a remote host via ``execnet`` and set task start time
@@ -16,7 +16,7 @@ def remote_execute(db, node, id):
         node['active'] = True
         node_id = node['_id']
         db.save(node)
-        ping_module = __import__('core_tasks.ping', fromlist=['core_tasks'])
+        ping_module = __import__('dirt.tasks.ping', fromlist=['dirt.tasks'])
         gw = execnet.makegateway('ssh=%s' % hostname)
         ch = gw.remote_exec(ping_module)
         if ch.receive():
@@ -36,23 +36,32 @@ def remote_execute(db, node, id):
                 ch.setcallback(callback = lambda(results): db.push_results(results, **push_args))
             except ImportError:
                 log.write('Task %s not found' % taskname)
-                return False
+                # node disengaged
+                node = db[node_id]
+                node['active'] = False
+                db.save(node)
+                # update doc
+                doc = db[id]
+                doc['started'] = doc['completed'] = time.time()
+                doc['results'] = {'success': False, 'reason': 'task module not found'}
+                db.save(doc)
+                return 'abort'
         else:
             log.write('Error connecting with host %s' % hostname)
             db.disable_node(hostname)
-            return False
-    except execnet.gateway.HostNotFound:
+            return 'retry'
+    except execnet.HostNotFound:
         log.write('Host %s not responding' % hostname)
         db.disable_node(hostname)
-        return False
-    return True
+        return 'retry'
+    return 'executed'
 
 def node_recon(nodelist, db, interactive=True):
     '''grab system information from a list of hosts and create or update
     slave nodes' db entries.
     '''
     import execnet
-    from core_tasks import system_info
+    from dirt.tasks import system_info
     nodes = db.get_nodes()
     for node in nodelist:
         log.write('Connecting to host %s' % node)

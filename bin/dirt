@@ -4,13 +4,8 @@
 #
 # Andy Mastbaum (amastbaum@gmail.com), August 2011
 
-
 import signal
 import sys
-if sys.path[0] == '':
-    sys.path.insert(1, '.')
-else:
-    sys.path.insert(0, '.')
 
 def help():
     '''print help message'''
@@ -32,7 +27,7 @@ def help():
 def signal_handler(signal, frame):
     '''handle SIGINTs gracefully'''
     import settings
-    from core.log import log
+    from dirt.core.log import log
     log.write('Caught SIGINT (Ctrl-C), Exiting.')
     sys.exit(0)
 
@@ -41,10 +36,10 @@ def serve_forever():
     available node for execution.
     '''
     import settings
-    from core.log import log
-    from core import helpers
-    from core import load_balance
-    from core import dbi
+    from dirt.core.log import log
+    from dirt.core import helpers
+    from dirt.core import load_balance
+    from dirt.core import dbi
     signal.signal(signal.SIGINT, signal_handler)
     log.write('dirt is running...')
 
@@ -53,18 +48,20 @@ def serve_forever():
     tasks = db.get_tasks()
 
     for id in tasks:
-        task_executed = False
-        while not task_executed:
+        task_status = 'new'
+        while task_status == 'new' or task_status == 'retry':
             node = nodes.next()
             log.write('%s -> %s' % (id, node['fqdn']))
-            task_executed = helpers.remote_execute(db, node, id)
+            task_status = helpers.remote_execute(db, node, id)
+            if task_status == 'abort':
+                log.write('Task %s aborted' % id)
 
 def updatenodes(nodes):
     '''update or add all hosts in list ``nodes`` in database host list'''
     import settings
-    from core.log import log
-    from core import dbi
-    from core import helpers
+    from dirt.core.log import log
+    from dirt.core import dbi
+    from dirt.core import helpers
     db = dbi.DirtCouchDB(settings.couchdb_host, settings.couchdb_dbname)
     if len(nodes) == 0:
         help()
@@ -83,7 +80,7 @@ if __name__ == '__main__':
     elif sys.argv[1] == 'updatenodes':
         updatenodes(nodes = sys.argv[2:])
     elif sys.argv[1] == 'create':
-        from core.create import create
+        from dirt.core.create import create
         if len(sys.argv) == 3:
             create(sys.argv[2], sys.argv[2])
         elif len(sys.argv) == 4:
