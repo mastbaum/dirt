@@ -53,7 +53,7 @@ class Log:
         '''write to log file'''
         log(self.filename, message, self.service_name, self.hoststamp, self.timestamp, self.console)
     def __str__(self):
-        return '<yelling.Log, %s' % filename
+        return '<yelling.Log, %s' % self.filename
 
 # Email
 def email(recipients, subject, message, sender=None):
@@ -69,7 +69,7 @@ def email(recipients, subject, message, sender=None):
         sender = '%s@%s' % (username, hostname)
     message = ('Subject: %s' % subject) + '\n\n' + message
     try:
-        smtp = smtplib.SMTP(setting.smtp_server)
+        smtp = smtplib.SMTP(settings.smtp_server)
         smtp.sendmail(sender, recipients, message)
     except smtplib.SMTPException:
         print 'yelling: email: Failed to send message'
