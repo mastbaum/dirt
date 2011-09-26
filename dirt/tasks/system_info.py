@@ -3,12 +3,17 @@ def execute():
     import sys
     import os
     import socket
+    import platform
+    import multiprocessing
     results = {}
     results['success'] = True
-    results['platform'] = sys.platform
+    results['cpu_count'] = multiprocessing.cpu_count()
+    results['platform'] = platform.platform()
+    results['architecture'] = platform.machine()
+    results['environ'] = os.environ.data
+    results['path'] = os.environ['PATH'].split(os.path.pathsep)
     results['version_info'] = sys.version_info
     results['pythonpath'] = sys.path
-    results['path'] = os.getenv('PATH')
     results['hostname'] = socket.gethostname()
     try:
         results['fqdn'] = socket.getfqdn()

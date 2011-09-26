@@ -6,6 +6,21 @@ Users submit groups of tasks to perform on a data set (or whatever), those are a
 
 Possible uses include distributed continuous integration, build testing, and automated data processing.
 
+Stories
+-------
+
+1. You want to run a series of compilation and unit tests on each revision of your software. You'd like to store the results in a database, and easily see things like all the tests on revision X or the history of unit test Y through the revisions.
+
+2. Your science experiment regularly produces data files as output. You need to perform some analyses on each file, and store the results.
+
+dirt is designed to make such tasks trivial. Basically, you have a fundamental data set -- a code revision, a data file, etc., called a "record" -- and a number of functions that you want to operate on this data set. With dirt, you simply:
+
+1. Express your tasks as Python modules
+2. Add a record to the database
+3. Add tasks associated with that record to the database
+
+and dirt will automatically run them and put results in a database, doling out tasks to as many computers as you make available to it.
+
 Database Backend
 ----------------
 dirt uses CouchDB for its database. Couch was chosen for interoperability with various other systems, but the dirt data model is easily normalized and trivially reimplemented in traditional SQL.

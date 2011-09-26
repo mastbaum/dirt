@@ -38,6 +38,7 @@ def serve_forever():
     import settings
     from dirt.core.log import log
     from dirt.core import helpers
+    from dirt.core import remote
     from dirt.core import load_balance
     from dirt.core import dbi
     signal.signal(signal.SIGINT, signal_handler)
@@ -51,25 +52,34 @@ def serve_forever():
         task_status = 'new'
         while task_status == 'new' or task_status == 'retry':
             node = nodes.next()
-            log.write('%s -> %s' % (id, node['fqdn']))
-            task_status = helpers.remote_execute(db, node, id)
-            if task_status == 'abort':
-                log.write('Task %s aborted' % id)
+            if helpers.check_requirements(db, id, node):
+                log.write('%s -> %s' % (id, node['fqdn']))
+                task_status = remote.remote_execute(db, node, id)
+                if task_status == 'abort':
+                    log.write('Task %s aborted' % id)
+            else:
+                doc = db[id]
+                if 'nodes_tried' in doc:
+                    doc['nodes_tried'].append(node['fqdn'])
+                else:
+                    doc['nodes_tried'] = [node['fqdn']]
+                db.save(doc)
+                task_status = 'abort'
 
 def updatenodes(nodes):
     '''update or add all hosts in list ``nodes`` in database host list'''
     import settings
     from dirt.core.log import log
     from dirt.core import dbi
-    from dirt.core import helpers
+    from dirt.core import remote
     db = dbi.DirtCouchDB(settings.couchdb_host, settings.couchdb_dbname)
     if len(nodes) == 0:
         help()
         sys.exit(1)
-    helpers.node_recon(nodes, db)
+    remote.node_recon(nodes, db)
 
 if __name__ == '__main__':
-    print 'dirt v0.1'
+    print 'dirt v0.5'
 
     if len(sys.argv) < 2:
         help()

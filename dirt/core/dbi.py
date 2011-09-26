@@ -1,10 +1,9 @@
-# interfacing to couchdb
-
 import sys
 import time
 import socket
 import getpass
 import couchdb
+
 import settings
 import dirt.core.yelling
 from dirt.core.log import log

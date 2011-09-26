@@ -10,7 +10,6 @@ exports.slave = new Type('slave', {
     fields: {
         fqdn: fields.string(),
         last_login: fields.string({required:false}),
-        password: fields.string(),
         enabled: fields.boolean(),
         active: fields.boolean()
     },

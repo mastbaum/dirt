@@ -10,7 +10,7 @@ Possible uses include distributed build testing, continuous integration, and aut
 
 **Source code** is available on [github](http://github.com/mastbaum/dirt)
 
-**Documentation** is available on [Read the Docs](http://readthedocs.org/docs/dirt)
+**Documentation** is available on [Read the Docs](http://dirt.readthedocs.org)
 
 Setting Up
 ----------
@@ -40,5 +40,5 @@ To start your dirt project,
 
 ### Next Steps ###
 
-See the [dirt documentation](http://readthedocs.org/docs/dirt) for a getting-started guide.
+See the [dirt documentation](http://dirt.readthedocs.org) for a getting-started guide.
 

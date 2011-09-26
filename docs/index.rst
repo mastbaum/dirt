@@ -25,6 +25,11 @@ Visit the URL ``kanso push`` gave you and watch the results roll in.
 
 Installation
 ------------
+Requirements:
+
+* CouchDB >= 1.1.0 (http://apache.couchdb.org)
+* kanso (http://kansojs.com)
+
 ``dirt`` is packaged for easy installation with ``setuptools``::
 
     $ git clone git://github.com/mastbaum/dirt.git
@@ -39,7 +44,8 @@ Documentation
 
    intro
    basic
-   getting_started
+   docs
+   example_project
    core
    core_tasks
 

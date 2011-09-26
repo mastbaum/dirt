@@ -1,14 +1,14 @@
 <h1>All Records</h1>
 
 <div>
- <table width=65%>
-  <tr>
-   <th>Record ID</th>
-   <th>Comments</th>
-   <th>#</th>
-   <th>Task Status</th>
-  </tr>
-  {?rows}
+ {?rows}
+  <table width=65%>
+   <tr>
+    <th>Record ID</th>
+    <th>Comments</th>
+    <th>#</th>
+    <th>Task Status</th>
+   </tr>
    {#rows}
      <tr>
       <td style="text-align:center;"><a href="{baseURL}/record/{key}">{key}</a></td>
