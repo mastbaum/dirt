@@ -1,5 +1,6 @@
 import os
 import shutil
+import tarfile
 from string import Template
 
 class MyTemplate(Template):
@@ -10,9 +11,12 @@ exclude_dirs = ['js']
 
 def create(project, dbname):
     '''creates the directory structure for a new dirt project'''
+    skel_file = os.path.join(os.path.dirname(__file__), '..', 'project.tar.gz')
+    skeleton_tarball = tarfile.open(skel_file,'r:gz')
+    skeleton_tarball.extractall()
     subs = {'project': project, 'dbname': dbname}
     cwd = os.path.dirname(os.path.abspath(__file__))
-    shutil.copytree(cwd + '/../project', project)
+    shutil.copytree('project', project)
     for root, dirs, files in os.walk(project, topdown=False):
         for name in files:
             fname = os.path.join(root, name)

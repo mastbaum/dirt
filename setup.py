@@ -1,8 +1,16 @@
 import os
+import tarfile
 from setuptools import setup
 
 def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
+
+# tar up project template directory since setuptools doesn't like dirs
+if os.path.exists('dirt/project.tar.gz'):
+    os.remove('dirt/project.tar.gz')
+tar = tarfile.open('dirt/project.tar.gz','w:gz')
+tar.add('dirt/project')
+tar.close()
 
 setup(
     name = "dirt",
@@ -20,11 +28,10 @@ setup(
         "License :: OSI Approved :: BSD License",
     ],
 
-    packages=['dirt'],
+    packages=['dirt','dirt.core','dirt.tasks'],
     scripts=['bin/dirt'],
     install_requires = ['couchdb', 'execnet'],
 
     include_package_data = True,
-    package_data = {'project':'*'}
-)
+    package_data = {'dirt': ['project.tar.gz']})
 
