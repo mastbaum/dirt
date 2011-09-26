@@ -23,7 +23,6 @@ exports.task = new Type('task', {
         started: fields.string({required:false}),
         completed: fields.string({required:false}),
         slave: fields.string({required:false}),
-        platform: fields.string({required:false}),
         record_id: fields.string()
     },
     allow_extra_fields: true

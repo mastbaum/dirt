@@ -8,12 +8,19 @@ def remote_execute(db, node, id):
     '''
     import time
     import execnet
+    import socket
     hostname = node['fqdn']
     try:
-        # first, check if node is alive
-        node['active'] = True
+        # store node's state in the db
+        alloc = {'master': socket.getfqdn(), 'db': db.db.name, 'task': id}
+        if 'alloc' in node:
+            node['alloc'].append(alloc)
+        else:
+            node['alloc'] = [alloc]
         node_id = node['_id']
         db.save(node)
+
+        # check if node is alive then remote_exec the task module
         ping_module = __import__('dirt.tasks.ping', fromlist=['dirt.tasks'])
         gw = execnet.makegateway('ssh=%s' % hostname)
         ch = gw.remote_exec(ping_module)
@@ -23,25 +30,34 @@ def remote_execute(db, node, id):
                 taskname = doc['name']
                 task_module = __import__('tasks.%s' % taskname, fromlist=['tasks'])
                 ch = gw.remote_exec(task_module)
+
                 # send keyword arguments to remote process
                 if 'kwargs' in doc:
                     ch.send(doc['kwargs'])
+
                 doc['started'] = time.time()
                 doc['slave'] = hostname
                 db.db.save(doc)
+
                 # use lambda to provide arguments to callback
                 push_args = {'id': id, 'node_id': node_id}
                 ch.setcallback(callback = lambda(results): db.push_results(results, **push_args))
+
             except ImportError:
                 log.write('Task %s not found' % taskname)
+
                 # node disengaged
                 node = db[node_id]
-                node['active'] = False
+                for alloc in node['alloc']:
+                    if node['alloc'][alloc]['id'] == id:
+                        node['alloc'].pop(alloc)
+                        break
                 db.save(node)
-                # update doc
+
+                # update doc with failure
                 doc = db[id]
                 doc['started'] = doc['completed'] = time.time()
-                doc['results'] = {'success': False, 'reason': 'task module not found'}
+                doc['results'] = {'success': False, 'reason': 'task module %s not found' % taskname}
                 db.save(doc)
                 return 'abort'
         else:

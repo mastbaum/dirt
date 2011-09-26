@@ -63,9 +63,14 @@ class DirtCouchDB():
 
     def push_results(self, results, id, node_id):
         '''update task document with results'''
+        # node disengaged
         node = self.db[node_id]
-        node['active'] = False
+        for alloc in range(len(node['alloc'])):
+            if node['alloc'][alloc]['task'] == id:
+                node['alloc'].pop(alloc)
+                break
         self.db.save(node)
+
         try:
             # upload attachments
             doc = self.db[id]

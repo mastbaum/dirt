@@ -10,7 +10,9 @@ def round_robin(db):
     while(True):
         nodes = db.get_nodes()
         for node in nodes:
-            if nodes[node]['enabled'] and not nodes[node]['active']:
-                yield nodes[node]
+            if nodes[node]['enabled']:
+                max_alloc = nodes[node]['sys_info']['cpu_count']
+                if 'alloc' not in nodes[node] or len(nodes[node]['alloc']) < max_alloc:
+                    yield nodes[node]
         time.sleep(1)
 
