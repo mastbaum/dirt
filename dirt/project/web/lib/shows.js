@@ -11,24 +11,3 @@ exports.not_found = function (doc, req) {
     };
 };
 
-exports.record = function (doc, req) {
-    // calculate overall success/failure
-    var pass = true;
-    var inprogress = false;
-    for (task in doc.tasks) {
-        doc.tasks[task]['results_string'] = JSON.stringify(doc.tasks[task]['results'], null, 1)
-        if (!doc.tasks[task]['results']['success']) {
-            pass = false;
-        }
-        if (!doc.tasks[task]['completed']) {
-            inprogress = true;
-        }
-    }
-    doc['pass'] = pass;
-    doc['inprogress'] = inprogress;
-    return {
-        title: '%%%{project} :: Record Detail: ' + doc.title,
-        content: templates.render('record.html', req, doc)
-    };
-};
-

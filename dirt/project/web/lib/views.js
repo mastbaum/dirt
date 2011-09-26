@@ -6,39 +6,9 @@
 exports.summary = {
     map: function(doc) {
         if (doc.type == 'record')
-            emit([doc._id, 0], doc);
+            emit([doc._id, 1], doc);
         if (doc.type == 'task')
-            emit([doc.record_id, 1], doc);
-    },
-    // must use group_level 1 for meaningful output
-    reduce: function(keys, values) {
-        var ntasks = 0
-        output = {name: '', description: '', task_coumt: 0, percents: {success: 0, failed: 0, waiting: 0, inprogress: 0}};
-        for (idx in values) {
-            if (values[idx].type == "record")
-                if(!output.name) {
-                    output.name = values[idx].title;
-                    output.description = values[idx].description;
-                }
-            if (values[idx].type == "task") {
-                ntasks += 1;
-                if (values[idx].completed) {
-                    if (values[idx].results.success)
-                        output.percents.success += 1;
-                    else
-                        output.percents.failed += 1;
-                } else {
-                    if (values[idx].started)
-                        output.percents.inprogress += 1;
-                    else
-                        output.percents.waiting += 1;
-                }
-            }
-        }
-        output.task_count = ntasks;
-        for (item in output.percents)
-            output.percents[item] = output.percents[item] * 100 / ntasks;
-        return output;
+            emit([doc.record_id, 0], doc);
     }
 };
 
