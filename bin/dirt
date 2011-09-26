@@ -28,13 +28,12 @@ def signal_handler(signal, frame):
     '''handle SIGINTs gracefully, clearing running tasks from the db'''
     import socket
     import settings
-    from dirt.core import dbi
     from dirt.core.log import log
+    from dirt.core.db import db
     log.write('Caught SIGINT (Ctrl-C), Exiting.')
 
     # clear any currently-running tasks from db
     log.write('Clearing running tasks from database')
-    db = dbi.DirtCouchDB(settings.couchdb_host, settings.couchdb_dbname)
     nodes = db.get_nodes()
     for node in nodes:
         for alloc in nodes[node]['alloc']:
@@ -46,7 +45,7 @@ def signal_handler(signal, frame):
                 db.save(doc)
             node_doc = db[nodes[node]['_id']]
             del node_doc['alloc']
-        db.save(node_doc)
+            db.save(node_doc)
 
     sys.exit(0)
 
@@ -55,15 +54,14 @@ def serve_forever():
     available node for execution.
     '''
     import settings
+    from dirt.core.db import db
     from dirt.core.log import log
     from dirt.core import helpers
     from dirt.core import remote
     from dirt.core import load_balance
-    from dirt.core import dbi
     signal.signal(signal.SIGINT, signal_handler)
     log.write('dirt is running...')
 
-    db = dbi.DirtCouchDB(settings.couchdb_host, settings.couchdb_dbname)
     nodes = load_balance.round_robin(db)
     tasks = db.get_tasks()
 
@@ -89,9 +87,8 @@ def updatenodes(nodes):
     '''update or add all hosts in list ``nodes`` in database host list'''
     import settings
     from dirt.core.log import log
-    from dirt.core import dbi
+    from dirt.core.db import db
     from dirt.core import remote
-    db = dbi.DirtCouchDB(settings.couchdb_host, settings.couchdb_dbname)
     if len(nodes) == 0:
         help()
         sys.exit(1)
