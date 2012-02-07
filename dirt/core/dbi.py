@@ -43,23 +43,25 @@ class DirtCouchDB():
         while(True):
             last_seq = 0
             changes = self.db.changes(feed='continuous', since=last_seq, filter=settings.project_name+'/task')
-            for change in changes:
-                try:
-                    id = change['id']
+            try:
+                for change in changes:
                     try:
-                        if not self.db[id].has_key('started'):
-                            yield id
+                        id = change['id']
+                        try:
+                            if not self.db[id].has_key('started'):
+                                yield id
+                        except KeyError:
+                            continue
                     except KeyError:
-                        continue
-                except KeyError:
-                    try:
-                        # sometimes the feed terminates, but tells us the last seq
-                        last_seq = change['last_seq']
-                    except KeyError:
-                        continue
-                except couchdb.http.ResourceNotFound:
-                    # sometimes this happens when the feed terminates
-                    continue
+                        try:
+                            # sometimes the feed terminates, but tells us the last seq
+                            last_seq = change['last_seq']
+                        except KeyError:
+                            continue
+            except couchdb.http.ResourceNotFound:
+                # happens when no changes exist yet or
+                # sometimes this happens when the feed terminates
+                continue
 
     def push_results(self, results, id, node_id):
         '''update task document with results'''
@@ -117,8 +119,12 @@ class DirtCouchDB():
     def get_nodes(self):
         '''query db to get slave node data'''
         nodes = {}
-        for row in self.db.view('_design/'+settings.project_name+'/_view/slaves_by_hostname'):
-            nodes[row.key] = row.value
+        try:
+            for row in self.db.view('_design/'+settings.project_name+'/_view/slaves_by_hostname'):
+                nodes[row.key] = row.value
+        except couchdb.http.ResourceNotFound:
+            # no nodes
+            pass
         return nodes
 
     def disable_node(self, fqdn):

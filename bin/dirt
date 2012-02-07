@@ -38,17 +38,20 @@ def signal_handler(signal, frame):
     log.write('Clearing running tasks from database')
     nodes = db.get_nodes()
     for node in nodes:
-        for alloc in nodes[node]['alloc']:
-            # only clear tasks from this master
-            if alloc['master'] == socket.getfqdn():
-                doc = db[alloc['task']]
-                del doc['started']
-                del doc['slave']
-                db.save(doc)
-            node_doc = db[nodes[node]['_id']]
-            del node_doc['alloc']
-            db.save(node_doc)
-
+        if 'alloc' in nodes[node]:
+            for i in range(len(nodes[node]['alloc'])):
+                # only clear tasks from this master
+                alloc = nodes[node]['alloc'][i]
+                if alloc['master'] == socket.getfqdn():
+                    doc = db[alloc['task']]
+                    if 'started' in doc:
+                        del doc['started']
+                    if 'slave' in doc:
+                        del doc['slave']
+                    db.save(doc)
+                    node_doc = db[nodes[node]['_id']]
+                    node_doc['alloc'].pop(i)
+                    db.save(node_doc)
     sys.exit(0)
 
 def serve_forever():

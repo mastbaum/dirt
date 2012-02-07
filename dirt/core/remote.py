@@ -48,10 +48,9 @@ def remote_execute(db, node, id):
 
                 # node disengaged
                 node = db[node_id]
-                for alloc in node['alloc']:
-                    if node['alloc'][alloc]['id'] == id:
+                for alloc in range(len(node['alloc'])):
+                    if node['alloc'][alloc]['task'] == id:
                         node['alloc'].pop(alloc)
-                        break
                 db.save(node)
 
                 # update doc with failure

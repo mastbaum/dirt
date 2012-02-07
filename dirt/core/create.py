@@ -19,7 +19,7 @@ def create(project, dbname):
     skeleton_tarball.extractall(wd)
     subs = {'project': project, 'dbname': dbname}
     cwd = os.path.dirname(os.path.abspath(__file__))
-    shutil.copytree(os.path.join(wd, 'dirt', 'project'), project)
+    shutil.copytree(os.path.join(wd, 'project'), project)
     for root, dirs, files in os.walk(project, topdown=False):
         for name in files:
             fname = os.path.join(root, name)
