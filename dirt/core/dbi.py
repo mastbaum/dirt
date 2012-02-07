@@ -103,7 +103,7 @@ class DirtCouchDB():
                 reason = 'n/a'
                 if 'reason' in results:
                     reason = results['reason']
-                message = '''An automated build test run by the %s server on host %s failed.\n\nType: %s\nDocument ID: %s\nNode: %s\nReason: %s\n\nThis is an automated email. Please do not reply.''' % (settings.project_name, socket.getfqdn(), doctype, id, node['fqdn'], reason)
+                message = '''An automated build test run by the %s server on host %s failed.\n\nType: %s\nRecord ID: %s\nDocument ID: %s\nNode: %s\nReason: %s\n\nThis is an automated email. Please do not reply.''' % (settings.project_name, socket.getfqdn(), doctype, doc['record_id'], id, node['fqdn'], reason)
                 dirt.core.yelling.email(settings.notify_list, '[%s] task failure' % settings.project_name, message)
 
         except couchdb.ResourceNotFound:
