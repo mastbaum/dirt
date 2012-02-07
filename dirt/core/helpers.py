@@ -3,8 +3,11 @@ def check_requirements(db, id, node):
     by this node. some reinvention of the query language is worth it for not
     eval()-ing stuff from the database.
     '''
-    if 'requires' not in db[id]:
-        return True
+    try:
+        if 'requires' not in db[id]:
+            return True
+    except couchdb.http.ResourceNotFound:
+        return False
     reqs = db[id]['requires']
     for req in reqs:
         try:

@@ -131,9 +131,13 @@ class DirtCouchDB():
         '''set a node's ``enabled`` flag to false'''
         for row in self.db.view('_design/'+settings.project_name+'/_view/slaves_by_hostname', key=fqdn):
             log.write('Disabling node %s' % fqdn)
-            node = self.db[row.id]
-            node['enabled'] = False
-            self.db.save(node)
+            try:
+                node = self.db[row.id]
+                node['enabled'] = False
+                self.db.save(node)
+            except couchdb.http.ResourceNotFound:
+                # already gone?
+                pass
 
     def __getitem__(self, id):
         '''get item from the db by id'''

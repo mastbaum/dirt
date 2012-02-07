@@ -8,6 +8,7 @@ import signal
 import sys
 
 sys.path.insert(0, '.')
+import settings
 
 def help():
     '''print help message'''
@@ -29,7 +30,6 @@ def help():
 def signal_handler(signal, frame):
     '''handle SIGINTs gracefully, clearing running tasks from the db'''
     import socket
-    import settings
     from dirt.core.log import log
     from dirt.core.db import db
     log.write('Caught SIGINT (Ctrl-C), Exiting.')
@@ -58,7 +58,6 @@ def serve_forever():
     '''when new tasks show up in the database, pair them up with the next
     available node for execution.
     '''
-    import settings
     from dirt.core.db import db
     from dirt.core.log import log
     from dirt.core import helpers
@@ -90,7 +89,6 @@ def serve_forever():
 
 def updatenodes(nodes):
     '''update or add all hosts in list ``nodes`` in database host list'''
-    import settings
     from dirt.core.log import log
     from dirt.core.db import db
     from dirt.core import remote
