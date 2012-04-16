@@ -17,7 +17,7 @@ Setting Up
 ### Dependencies (server) ###
 
 1. Apache CouchDB >= 1.1.0 on server (http://couchdb.apache.org)
-2. kanso (http://kansojs.org)
+2. kanso == 0.0.7 (http://kansojs.org)
 
 ### Dependencies (execution nodes) ###
 

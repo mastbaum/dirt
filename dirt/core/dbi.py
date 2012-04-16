@@ -43,23 +43,25 @@ class DirtCouchDB():
         while(True):
             last_seq = 0
             changes = self.db.changes(feed='continuous', since=last_seq, filter=settings.project_name+'/task')
-            for change in changes:
-                try:
-                    id = change['id']
+            try:
+                for change in changes:
                     try:
-                        if not self.db[id].has_key('started'):
-                            yield id
+                        id = change['id']
+                        try:
+                            if not self.db[id].has_key('started'):
+                                yield id
+                        except KeyError:
+                            continue
                     except KeyError:
-                        continue
-                except KeyError:
-                    try:
-                        # sometimes the feed terminates, but tells us the last seq
-                        last_seq = change['last_seq']
-                    except KeyError:
-                        continue
-                except couchdb.http.ResourceNotFound:
-                    # sometimes this happens when the feed terminates
-                    continue
+                        try:
+                            # sometimes the feed terminates, but tells us the last seq
+                            last_seq = change['last_seq']
+                        except KeyError:
+                            continue
+            except couchdb.http.ResourceNotFound:
+                # happens when no changes exist yet or
+                # sometimes this happens when the feed terminates
+                continue
 
     def push_results(self, results, id, node_id):
         '''update task document with results'''
@@ -103,7 +105,7 @@ class DirtCouchDB():
                 reason = 'n/a'
                 if 'reason' in results:
                     reason = results['reason']
-                message = '''An automated build test run by the %s server on host %s failed.\n\nType: %s\nDocument ID: %s\nNode: %s\nReason: %s\n\nThis is an automated email. Please do not reply.''' % (settings.project_name, socket.getfqdn(), doctype, id, node['fqdn'], reason)
+                message = '''An automated build test run by the %s server on host %s failed.\n\nType: %s\nRecord ID: %s\nDocument ID: %s\nNode: %s\nReason: %s\n\nThis is an automated email. Please do not reply.''' % (settings.project_name, socket.getfqdn(), doctype, doc['record_id'], id, node['fqdn'], reason)
                 dirt.core.yelling.email(settings.notify_list, '[%s] task failure' % settings.project_name, message)
 
         except couchdb.ResourceNotFound:
@@ -117,17 +119,25 @@ class DirtCouchDB():
     def get_nodes(self):
         '''query db to get node data'''
         nodes = {}
-        for row in self.db.view('_design/'+settings.project_name+'/_view/nodes_by_hostname'):
-            nodes[row.key] = row.value
+        try:
+            for row in self.db.view('_design/'+settings.project_name+'/_view/nodes_by_hostname'):
+                nodes[row.key] = row.value
+        except couchdb.http.ResourceNotFound:
+            # no nodes
+            pass
         return nodes
 
     def disable_node(self, fqdn):
         '''set a node's ``enabled`` flag to false'''
         for row in self.db.view('_design/'+settings.project_name+'/_view/nodes_by_hostname', key=fqdn):
             log.write('Disabling node %s' % fqdn)
-            node = self.db[row.id]
-            node['enabled'] = False
-            self.db.save(node)
+            try:
+                node = self.db[row.id]
+                node['enabled'] = False
+                self.db.save(node)
+            except couchdb.http.ResourceNotFound:
+                # already gone?
+                pass
 
     def __getitem__(self, id):
         '''get item from the db by id'''

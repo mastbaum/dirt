@@ -1,5 +1,7 @@
 import os
+import uuid
 import shutil
+import tarfile
 from string import Template
 
 class MyTemplate(Template):
@@ -10,9 +12,14 @@ exclude_dirs = ['js']
 
 def create(project, db_name):
     '''creates the directory structure for a new dirt project'''
+    skel_file = os.path.join(os.path.dirname(__file__), '..', 'project.tar.gz')
+    skeleton_tarball = tarfile.open(skel_file,'r:gz')
+    wd = uuid.uuid4().get_hex()
+    os.mkdir(wd)
+    skeleton_tarball.extractall(wd)
     subs = {'project': project, 'db_name': db_name}
     cwd = os.path.dirname(os.path.abspath(__file__))
-    shutil.copytree(cwd + '/../project', project)
+    shutil.copytree(os.path.join(wd, 'project'), project)
     for root, dirs, files in os.walk(project, topdown=False):
         for name in files:
             fname = os.path.join(root, name)
@@ -23,6 +30,7 @@ def create(project, db_name):
                 contents = MyTemplate(contents).substitute(subs)
                 with open(fname,'w') as f:
                     f.write(contents)
+    shutil.rmtree(wd)
 
     print 'Created new dirt project in', project
 

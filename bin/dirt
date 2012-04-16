@@ -8,6 +8,10 @@ import signal
 import sys
 
 sys.path.insert(0, '.')
+<<<<<<< HEAD
+=======
+import settings
+>>>>>>> 41d0a185ee14519a3ae62d169a954056cd33f8e1
 
 def help():
     '''print help message'''
@@ -29,7 +33,6 @@ def help():
 def signal_handler(signal, frame):
     '''handle SIGINTs gracefully, clearing running tasks from the db'''
     import socket
-    import settings
     from dirt.core.log import log
     from dirt.core.db import db
     log.write('Caught SIGINT (Ctrl-C), Exiting.')
@@ -38,24 +41,26 @@ def signal_handler(signal, frame):
     log.write('Clearing running tasks from database')
     nodes = db.get_nodes()
     for node in nodes:
-        for alloc in nodes[node]['alloc']:
-            # only clear tasks from this master
-            if alloc['master'] == socket.getfqdn():
-                doc = db[alloc['task']]
-                del doc['started']
-                del doc['node']
-                db.save(doc)
-            node_doc = db[nodes[node]['_id']]
-            del node_doc['alloc']
-            db.save(node_doc)
-
+        if 'alloc' in nodes[node]:
+            for i in range(len(nodes[node]['alloc'])):
+                # only clear tasks from this master
+                alloc = nodes[node]['alloc'][i]
+                if alloc['master'] == socket.getfqdn():
+                    doc = db[alloc['task']]
+                    if 'started' in doc:
+                        del doc['started']
+                    if 'node' in doc:
+                        del doc['node']
+                    db.save(doc)
+                    node_doc = db[nodes[node]['_id']]
+                    node_doc['alloc'].pop(i)
+                    db.save(node_doc)
     sys.exit(0)
 
 def serve_forever():
     '''when new tasks show up in the database, pair them up with the next
     available node for execution.
     '''
-    import settings
     from dirt.core.db import db
     from dirt.core.log import log
     from dirt.core import helpers
@@ -87,7 +92,6 @@ def serve_forever():
 
 def updatenodes(nodes):
     '''update or add all hosts in list ``nodes`` in database host list'''
-    import settings
     from dirt.core.log import log
     from dirt.core.db import db
     from dirt.core import remote
