@@ -36,7 +36,7 @@ def remote_execute(db, node, id):
                     ch.send(doc['kwargs'])
 
                 doc['started'] = time.time()
-                doc['slave'] = hostname
+                doc['node'] = hostname
                 db.db.save(doc)
 
                 # use lambda to provide arguments to callback
@@ -72,7 +72,7 @@ def remote_execute(db, node, id):
 
 def node_recon(nodelist, db, interactive=True):
     '''grab system information from a list of hosts and create or update
-    slave nodes' db entries.
+    nodes' db entries.
     '''
     import execnet
     from dirt.tasks import system_info
@@ -95,7 +95,7 @@ def node_recon(nodelist, db, interactive=True):
             d['sys_info'] = sys_info
             d['enabled'] = True
         else:
-            d = {'type': 'slave', 'fqdn': sys_info['fqdn'], 'sys_info': sys_info, 'active': False}
+            d = {'type': 'node', 'fqdn': sys_info['fqdn'], 'sys_info': sys_info, 'active': False}
             log.write('Adding new node %(fqdn)s to database' % d)
             d['enabled'] = settings.node_enable_default
         db.save(d)

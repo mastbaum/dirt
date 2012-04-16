@@ -6,22 +6,21 @@ def read(fname):
 
 setup(
     name = "dirt",
-    version = "0.5",
+    version = "0.6",
     author = "Andy Mastbaum",
     author_email = "amastbaum@gmail.com",
-    description = ("A restful framework for oversight and tracking of remotely-executed jobs."),
+    description = ("A framework for oversight and tracking of remotely-executed jobs."),
     license = "BSD",
     keywords = "remote execution couchdb kanso",
     url = "http://github.com/mastbaum/dirt",
-    long_description=read('README.md'),
-    classifiers=[
+    long_description = read('README.md'),
+    classifiers = [
         "Development Status :: 3 - Alpha",
         "Topic :: Software Development :: Libraries :: Application Frameworks",
         "License :: OSI Approved :: BSD License",
     ],
-
-    packages=['dirt'],
-    scripts=['bin/dirt'],
+    packages = ['dirt'],
+    scripts = ['bin/dirt'],
     install_requires = ['couchdb', 'execnet'],
 
     include_package_data = True,

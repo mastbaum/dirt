@@ -1,0 +1,79 @@
+<html>
+  <head>
+    <title>%%%{project}</title>
+    <link type="text/css" rel="stylesheet" href="css/bootstrap.css">
+    <style>
+      .status-bar {
+        display: inline-block;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="header"></div>
+
+    <!-- begin content //-->
+    <div id="content">
+      <div class="container-fluid table">
+        <div class="row-fluid">
+          <div class="span10">
+            <h1>All Records</h1>
+            <hr/>
+            <table id="records" cellpadding="5px" width="100%">
+              <tr align="left" style="background:#f9f9f9">
+                <th>ID</th>
+                <th>Comments</th>
+                <th>Tasks</th>
+                <th width="100%">Task Status</th>
+              </tr>
+            </table>
+          </div>
+          <div class="span2">
+            <div id="legend"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- end content //-->
+  </body>
+
+  <script type="text/javascript" src="js/jquery-1.7.1.min.js"></script>
+  <script type="text/javascript" src="js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="/_utils/script/jquery.couch.js"></script>
+
+  <script>
+    var db_name = '%%%{db_name}';
+    var db = $.couch.db(db_name);
+    $("#header").load("header.html");
+
+    $(document).ready(function() {
+      db.list("%%%{project}/index", "summary", {}, {
+        success: function(data) {
+          //console.log(data);
+          for (i in data) {
+            var html = '<tr>';
+            html += '<td><a href="record.html?id=' + data[i].id + '">' + data[i].id + '</td>';
+            html += '<td style="white-space:nowrap">' + data[i].description + '</td>';
+            html += '<td>' + data[i].ntasks + '</td>';
+            html += '<td><div>';
+            html += '<div title="Succeeded: ' + data[i].pass + '%" class="status-bar" style="width:' + data[i].pass + '%;background:green;">&nbsp;</div>';
+            html += '<div title="Failed: ' + data[i].fail + '%" class="status-bar" style="width:' + data[i].fail + '%;background:red;">&nbsp;</div>';
+            html += '<div title="In Progress: ' + data[i].inprogress + '%" class="status-bar" style="width:' + data[i].inprogress + '%;background:blue;">&nbsp;</div>';
+            html += '<div title="Waiting: ' + data[i].waiting + '%" class="status-bar" style="width:' + data[i].waiting + '%;background:gray;">&nbsp;</div>';
+            html += '</div></td>';
+            $("#records").append(html);
+          }
+
+          if (data.length == 0) {
+            $("body").append('<h2>No records found.</h2>');
+          }
+        },
+        error: function(e) {
+          alert('Error loading from database: ' + e);
+        }
+      });
+    });
+
+    $("#legend").load("legend.html");
+  </script>
+</html>
+

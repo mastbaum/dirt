@@ -7,7 +7,7 @@ project_name = '%%%{project}'
 # URL of couchdb server
 couchdb_host = 'http://localhost:5984'
 # couchdb database name
-couchdb_dbname = '%%%{project}'
+couchdb_dbname = '%%%{db_name}'
 
 ## Node configuration defaults
 # When adding a new node, enable it by default?

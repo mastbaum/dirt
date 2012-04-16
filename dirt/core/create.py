@@ -8,9 +8,9 @@ class MyTemplate(Template):
 exts = ['.html','.py','.js','.md','.json']
 exclude_dirs = ['js']
 
-def create(project, dbname):
+def create(project, db_name):
     '''creates the directory structure for a new dirt project'''
-    subs = {'project': project, 'dbname': dbname}
+    subs = {'project': project, 'db_name': db_name}
     cwd = os.path.dirname(os.path.abspath(__file__))
     shutil.copytree(cwd + '/../project', project)
     for root, dirs, files in os.walk(project, topdown=False):

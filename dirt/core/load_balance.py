@@ -1,4 +1,4 @@
-# load balancing is implemented with generators that yield slave ("node")
+# load balancing is implemented with generators that yield node
 # couchdb documents
 
 import time

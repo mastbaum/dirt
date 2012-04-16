@@ -12,7 +12,7 @@ def execute():
     results['architecture'] = platform.machine()
     results['environ'] = os.environ.data
     results['path'] = os.environ['PATH'].split(os.path.pathsep)
-    results['version_info'] = sys.version_info
+    results['version_info'] = tuple(sys.version_info)
     results['pythonpath'] = sys.path
     results['hostname'] = socket.gethostname()
     try:

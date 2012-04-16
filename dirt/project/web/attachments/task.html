@@ -1,0 +1,112 @@
+<html>
+  <head>
+    <title>%%%{project}</title>
+    <link type="text/css" rel="stylesheet" href="css/bootstrap.css">
+  </head>
+  <body>
+    <div id="header"></div>
+
+    <!-- begin content //-->
+    <div id="content">
+      <div class="container-fluid table">
+        <div class="row-fluid">
+          <div class="span10">
+            <h1 id="task-name"></h1>
+            <div id="task-description"></div>
+            <hr/>
+            <table id="tasks" cellpadding="5px" width="100%">
+              <tr align="left" style="background:#f9f9f9">
+                <th>Record</th>
+                <th>Created</th>
+                <th>Node</th>
+                <th>Started</th>
+                <th>Completed</th>
+                <th>Status</th>
+                <th>Results</th>
+              </tr>
+            </table>
+          </div>
+          <div class="span2">
+            <div id="legend"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- end content //-->
+  </body>
+
+  <script type="text/javascript" src="js/jquery-1.7.1.min.js"></script>
+  <script type="text/javascript" src="js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="/_utils/script/jquery.couch.js"></script>
+
+  <script>
+    /* read a query string parameter */
+    get_parameter_by_name = function(name) {
+      name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
+      var regexS = "[\\?&]" + name + "=([^&#]*)";
+      var regex = new RegExp(regexS);
+      var results = regex.exec(window.location.href);
+      if(results == null) return "";
+      else return decodeURIComponent(results[1].replace(/\+/g, " "));
+    };
+
+    $("#header").load("header.html");
+    var db_name = '%%%{db_name}';
+    var db = $.couch.db(db_name);
+    var base_url = [$.couch.urlPrefix, db_name, ''].join('/');
+    var task_name = get_parameter_by_name('name');
+
+    $(document).ready(function() {
+      db.list("%%%{project}/task", "tasks_by_name", {
+          startkey: [task_name],
+          endkey: [task_name, {}]
+        }, {
+        success: function(data) {
+          //console.log(data);
+          $("#task-name").html(data.task_name);
+
+          for (i in data.rows) {
+            var row = data.rows[i].value;
+            //console.log(row);
+            var html = '<tr>';
+              html += '<td><a href="record.html?id=' + row.record_id + '">' + row.record_id + '</a></td>';
+              html += '<td>' + row.created + '</td>';
+              html += '<td>' + (row.node ? row.node : row.slave) + '</td>';
+              html += '<td>' + row.started + '</td>';
+              html += '<td>' + row.completed + '</td>';
+              html += '<td>';
+              if (row.completed && row.results.success == true)
+                html += '<div title="Passed" class="status-bar" style="height:15px;width:15px;background:green;"></div>';
+              if (row.started && !row.completed)
+                html += '<div title="In progress" class="status-bar" style="height:15px;width:15px;background:blue;"></div>';
+              if (row.completed && row.results.success == false)
+                html += '<div title="Failed" class="status-bar" style="height:15px;width:15px;background:red;"></div>';
+              if (!row.started)
+                html += '<div title="Waiting" class="status-bar" style="height:15px;width:15px;background:gray;"></div>';
+              html += '</td>';
+              html += '<td>';
+              if (row.results) {
+                html += '<a data-toggle="modal" href="#results_' + row._id + '" >Results (raw)</a>';
+                html += '<div style="display:none" id="results_' + row._id + '" class="modal fade"><div class="modal-header"><a class="close" data-dismiss="modal">x</a><h3>Results</h3></div><div class="modal-body"><pre style="color:black">' + JSON.stringify(row.results, null, 1) + '</pre></div></div>';
+              }
+              if (row.completed) {
+                for (ilink in row.results.attach_links) {
+                  var link_name = row.results.attach_links[ilink].name;
+                  var link_file = row.results.attach_links[ilink].id;
+                  html += '<br/><a href="' + [base_url + row._id, link_file].join('/') + '">' + link_name + '</a>';
+                }
+              }
+              html += '</td>';
+              $("#tasks").append(html);
+            }
+          },
+          error: function(e, msg) {
+            alert('Error loading from database: ' + e + ': ' + msg);
+          }
+        });
+      });
+
+      $("#legend").load("legend.html");
+    </script>
+  </html>
+

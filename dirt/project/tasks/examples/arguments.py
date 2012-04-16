@@ -1,5 +1,5 @@
 def execute(cat, dog):
-    '''A simple example task that just returns True.
+    '''An example task that takes keyword arguments.
 
     Tasks can look like anything, so long as they:
 
