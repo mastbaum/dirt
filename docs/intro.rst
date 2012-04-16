@@ -1,6 +1,6 @@
 Introduction
 ============
-dirt is a Python and `kanso <http://kansojs.org>`_ (CouchDB) application for oversight and tracking of remotely-executed jobs.
+dirt is a Python and CouchDB application for oversight and tracking of remotely-executed jobs.
 
 Users submit groups of tasks to perform on a data set (or whatever), those are added to a database, tasks are doled out to remote execution hosts, and results are stored in the DB and presented via a web page.
 
@@ -25,9 +25,11 @@ Database Backend
 ----------------
 dirt uses CouchDB for its database. Couch was chosen for interoperability with various other systems, but the dirt data model is easily normalized and trivially reimplemented in traditional SQL.
 
+The ``dirt`` CouchApp is compiled and managed with `egret <http://github.com/mastbaum/egret>`_, a very lightweight pure Python CouchApp authoring tool.
+
 Web Frontend
 ------------
-Since Couch is used for the DB, it made sense to write the frontend using CouchDB views. The frontend of dirt is written as a kanso application, which provides some extra magic on top of the more typical couchapp.
+Since Couch is used for the DB, it made sense to write the frontend using CouchDB views. The frontend of dirt is a set of pages that are built dynamically using Ajax via the jQuery CouchDB API. There is no reason the website couldn't be served by a standalone web server.
 
 Remote Execution
 ----------------

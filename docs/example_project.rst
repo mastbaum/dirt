@@ -10,7 +10,7 @@ Starting the project
 Use ``dirt create`` to start a project::
 
     $ dirt create builder
-    dirt v0.1
+    dirt v0.6
     Created new dirt project in builder
     $ cd builder
     $ ls
@@ -23,7 +23,7 @@ Describe your project in ``README.md``, and tweak settings as necessary in ``set
  
 Push the web application to your CouchDB server::
 
-    $ cd web && kanso push builder
+    $ cd web && ./egret push builder
 
 If you're not running the server on localhost, replace "builder" with the full database URL.
 
@@ -110,7 +110,7 @@ It is now listening for new tasks.
 Adding records and tasks to the database
 ----------------------------------------
 
-Records and the tasks that go with them are added directly to the CouchDB database. There are lots of ways of pushing data to couch, including ``curl -X PUT ...``, ``kanso pushdata ...``, any language's couchdb module, etc.
+Records and the tasks that go with them are added directly to the CouchDB database. There are lots of ways of pushing data to couch, including ``curl -X PUT ...``, ``egret pushdata ...``, any language's couchdb module, etc.
 
 For a real build tester, the record and task documents for each revision should be constructed and posted to the server by some kind of post-commit hook in your version control system. For this example, we will just construct the JSON documents manually. Save the following as r123.json (pretending this code has something to do with revision 123)::
 
@@ -147,14 +147,14 @@ Watch the magic
 The running dirt program should send the ``compile_hello`` task off to localhost, with output like this::
 
     $ dirt serve
-    dirt v0.1
+    dirt v0.6
     Sep 07 12:57:20 neutralino myproject : dirt is running...
     Sep 07 12:57:20 neutralino myproject : Connected to db at http://localhost:5984/myproject
     Sep 07 12:57:20 neutralino myproject : 2e3dabbff38ca7f6fa05c5a0cbbc95a5 -> localhost.localdomain
     Sep 07 12:57:22 neutralino myproject : Task 2e3dabbff38ca7f6fa05c5a0cbbc95a5 pushed to db
     Sep 07 12:57:22 neutralino myproject : Task 2e3dabbff38ca7f6fa05c5a0cbbc95a5: file build.log attached
 
-Now, go the URL ``kanso push`` gave you (e.g. http://localhost:5984/myproject/_design/myproject/_rewrite), and see the results in the web interface. Clicking on r123 brings you to the record summary page. You can see the build log and raw results dictionary from the "Results" links. Clicking the task name brings you to the task history page -- the outcome of all ``compile_hello`` tasks ever run.
+Now, go the project URL (e.g. http://localhost:5984/myproject/_design/myproject/index.html), and see the results in the web interface. Clicking on r123 brings you to the record summary page. You can see the build log and raw results dictionary from the "Results" links. Clicking the task name brings you to the task history page -- the outcome of all ``compile_hello`` tasks ever run.
 
 Moving on
 ---------
