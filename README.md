@@ -2,7 +2,7 @@ dirt
 ====
 Overview
 --------
-dirt is a Python and kanso (CouchDB) application for oversight and tracking of remotely-executed jobs.
+dirt is a Python and CouchDB application for oversight and tracking of remotely-executed jobs.
 
 Users submit groups of tasks to perform on a data set (or code revision, etc.) called a "record," those are added to a database, tasks are doled out to remote execution hosts, and results are stored in the DB and presented via a web page.
 
@@ -16,8 +16,8 @@ Setting Up
 ----------
 ### Dependencies (server) ###
 
+0. Python >= 2.6
 1. Apache CouchDB >= 1.1.0 on server (http://couchdb.apache.org)
-2. kanso == 0.0.7 (http://kansojs.org)
 
 ### Dependencies (execution nodes) ###
 
@@ -36,7 +36,7 @@ To start your dirt project,
 1. `dirt create <projectname> [database name]` (database name defaults to project name)
 2. `cd <projectname>`
 3. Describe your project in `README.md`
-4. `cd web && kanso push <database name>`. Take a look at the URL it returns.
+4. `cd web && ./egret push <database name>`. Take a look at the URL it returns.
 
 ### Next Steps ###
 
