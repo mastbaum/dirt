@@ -8,10 +8,7 @@ import signal
 import sys
 
 sys.path.insert(0, '.')
-<<<<<<< HEAD
-=======
 import settings
->>>>>>> 41d0a185ee14519a3ae62d169a954056cd33f8e1
 
 def help():
     '''print help message'''
