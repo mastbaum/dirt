@@ -17,11 +17,11 @@ dirt's interface to the CouchDB database. All db interactions happen through a s
 .. automodule:: dirt.core.dbi
    :members:
 
-dirt.core.helpers
------------------
-Various helper functions
+dirt.core.server
+----------------
+The main dirt server function
 
-.. automodule:: dirt.core.helpers
+.. automodule:: dirt.core.server
    :members:
 
 dirt.core.load_balance
