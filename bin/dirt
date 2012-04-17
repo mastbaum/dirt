@@ -1,12 +1,11 @@
 #!/usr/bin/env python
 
-# DIRT.
+# dirt <http://github.com/mastbaum/dirt>
 #
 # Andy Mastbaum (amastbaum@gmail.com), August 2011
+#
 
-import signal
 import sys
-
 sys.path.insert(0, '.')
 
 def help():
@@ -18,83 +17,14 @@ def help():
   - Run the dirt remote execution server, which will dole out unfinished tasks
     in the database to available execution hosts.
 
-  dirt updatenodes [host1] [host2] ...
+  dirt updatenodes host1 [host2 ...]
   - Update stored system information on each host, adding the host to the
     database if necessary.
 
-  dirt create [project name] [db name (optional)]
-  - Create the skeleton directory structure for a new dirt project.
+  dirt create project_name [db_name]
+  - Create the skeleton directory structure for a new dirt project. DB name
+    defaults to project name.
 '''
-
-def signal_handler(signal, frame):
-    '''handle SIGINTs gracefully, clearing running tasks from the db'''
-    import socket
-    from dirt.core.log import log
-    from dirt.core.db import db
-    log.write('Caught SIGINT (Ctrl-C), Exiting.')
-
-    # clear any currently-running tasks from db
-    log.write('Clearing running tasks from database')
-    nodes = db.get_nodes()
-    for node in nodes:
-        if 'alloc' in nodes[node]:
-            for i in range(len(nodes[node]['alloc'])):
-                # only clear tasks from this master
-                alloc = nodes[node]['alloc'][i]
-                if alloc['master'] == socket.getfqdn():
-                    doc = db[alloc['task']]
-                    if 'started' in doc:
-                        del doc['started']
-                    if 'node' in doc:
-                        del doc['node']
-                    db.save(doc)
-                    node_doc = db[nodes[node]['_id']]
-                    node_doc['alloc'].pop(i)
-                    db.save(node_doc)
-    sys.exit(0)
-
-def serve_forever():
-    '''when new tasks show up in the database, pair them up with the next
-    available node for execution.
-    '''
-    from dirt.core.db import db
-    from dirt.core.log import log
-    from dirt.core import helpers
-    from dirt.core import remote
-    from dirt.core import load_balance
-    signal.signal(signal.SIGINT, signal_handler)
-    log.write('dirt is running...')
-
-    nodes = load_balance.round_robin(db)
-    tasks = db.get_tasks()
-
-    for id in tasks:
-        task_status = 'new'
-        while task_status == 'new' or task_status == 'retry':
-            node = nodes.next()
-            if helpers.check_requirements(db, id, node):
-                log.write('%s -> %s' % (id, node['fqdn']))
-                task_status = remote.remote_execute(db, node, id)
-                if task_status == 'abort':
-                    log.write('Task %s aborted' % id)
-            else:
-                doc = db[id]
-                if 'nodes_tried' in doc:
-                    doc['nodes_tried'].append(node['fqdn'])
-                else:
-                    doc['nodes_tried'] = [node['fqdn']]
-                db.save(doc)
-                task_status = 'abort'
-
-def updatenodes(nodes):
-    '''update or add all hosts in list ``nodes`` in database host list'''
-    from dirt.core.log import log
-    from dirt.core.db import db
-    from dirt.core import remote
-    if len(nodes) == 0:
-        help()
-        sys.exit(1)
-    remote.node_recon(nodes, db)
 
 if __name__ == '__main__':
     print 'dirt v0.6'
@@ -103,20 +33,18 @@ if __name__ == '__main__':
         help()
         sys.exit(1)
 
-    if sys.argv[1] == 'serve':
-        serve_forever()
-    elif sys.argv[1] == 'updatenodes':
-        updatenodes(nodes = sys.argv[2:])
+    if sys.argv[1] == 'help':
+        help()
     elif sys.argv[1] == 'create':
-        from dirt.core.create import create
-        if len(sys.argv) == 3:
-            create(sys.argv[2], sys.argv[2])
-        elif len(sys.argv) == 4:
-            create(sys.argv[2], sys.argv[3])
-        else:
-            help()
-            sys.exit(1)
+        from dirt.core import create
+        create.create(*sys.argv[2:])
+    elif sys.argv[1] == 'serve':
+       from dirt.core import server
+       server.serve_forever()
+    elif sys.argv[1] == 'updatenodes':
+        from dirt.core import remote
+        remote.node_recon(sys.argv[2:])
     else:
         help()
-        sys.exit(0)
+        sys.exit(1)
 

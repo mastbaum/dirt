@@ -69,12 +69,13 @@ def remote_execute(db, node, id):
         return 'retry'
     return 'executed'
 
-def node_recon(nodelist, db, interactive=True):
+def node_recon(nodelist, interactive=True):
     '''grab system information from a list of hosts and create or update
     nodes' db entries.
     '''
     import execnet
     from dirt.tasks import system_info
+    from dirt.core.db import db
     nodes = db.get_nodes()
     for node in nodelist:
         log.write('Connecting to host %s' % node)

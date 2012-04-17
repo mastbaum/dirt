@@ -10,7 +10,9 @@ class MyTemplate(Template):
 exts = ['.html','.py','.js','.md','.json']
 exclude_dirs = ['js']
 
-def create(project, db_name):
+def create(project, db_name=None):
+    if db_name is None:
+        db_name = project
     '''creates the directory structure for a new dirt project'''
     skel_file = os.path.join(os.path.dirname(__file__), '..', 'project.tar.gz')
     skeleton_tarball = tarfile.open(skel_file,'r:gz')
