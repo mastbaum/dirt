@@ -34,34 +34,20 @@ class DirtCouchDB():
             sys.exit(1)
 
     def get_tasks(self):
-        '''more persistent wrapper for couchdb changes. the couchdb package
-        nicely provides the changes feed as a generator, but it terminates
-        after some time inactive. since the changes feed drives the dirt
-        event loop, we have to wrap the changes in a generator that will
-        never die.
-        '''
+        '''a wrapper for couchdb changes which should never die'''
+        last_seq = 0
         while(True):
-            last_seq = 0
-            changes = self.db.changes(feed='continuous', since=last_seq, filter=settings.project_name+'/task')
+            changes = self.db.changes(feed='continuous', heartbeat=30000, since=last_seq, filter=settings.project_name+'/task')
             try:
                 for change in changes:
-                    try:
-                        id = change['id']
-                        try:
-                            if not self.db[id].has_key('started'):
-                                yield id
-                        except KeyError:
-                            continue
-                    except KeyError:
-                        try:
-                            # sometimes the feed terminates, but tells us the last seq
-                            last_seq = change['last_seq']
-                        except KeyError:
-                            continue
+                    id = change['id']
+                    if id in self.db and 'started' not in self.db[id]:
+                        last_seq = change['seq']
+                        yield id
             except couchdb.http.ResourceNotFound:
                 # happens when no changes exist yet or
                 # sometimes this happens when the feed terminates
-                continue
+                pass
 
     def push_results(self, results, id, node_id):
         '''update task document with results'''
@@ -88,9 +74,10 @@ class DirtCouchDB():
                 # if a link name is specified, put a link next to results on the web page
                 for attachment in results['attachments']:
                     if 'link_name' in attachment:
-                        if not 'attach_links' in doc['results']:
-                            doc['results']['attach_links'] = []
-                        doc['results']['attach_links'].append({'id': attachment['filename'], 'name': attachment['link_name']})
+                        doc['results'].setdefault('attach_links', []).append({
+                            'id': attachment['filename'],
+                            'name': attachment['link_name']
+                        })
                 del doc['results']['attachments']
             self.db.save(doc)
             log.write('Task %s pushed to db' % id)
@@ -120,7 +107,7 @@ class DirtCouchDB():
         '''query db to get node data'''
         nodes = {}
         try:
-            for row in self.db.view('_design/'+settings.project_name+'/_view/nodes_by_hostname'):
+            for row in self.db.view('_design/%s/_view/nodes_by_hostname' % settings.project_name):
                 nodes[row.key] = row.value
         except couchdb.http.ResourceNotFound:
             # no nodes
@@ -129,7 +116,7 @@ class DirtCouchDB():
 
     def disable_node(self, fqdn):
         '''set a node's ``enabled`` flag to false'''
-        for row in self.db.view('_design/'+settings.project_name+'/_view/nodes_by_hostname', key=fqdn):
+        for row in self.db.view('_design/%s/_view/nodes_by_hostname' % settings.project_name, key=fqdn):
             log.write('Disabling node %s' % fqdn)
             try:
                 node = self.db[row.id]

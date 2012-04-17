@@ -94,7 +94,7 @@ def node_recon(nodelist, db, interactive=True):
             d['sys_info'] = sys_info
             d['enabled'] = True
         else:
-            d = {'type': 'node', 'fqdn': sys_info['fqdn'], 'sys_info': sys_info, 'active': False}
+            d = {'type': 'node', 'fqdn': sys_info['fqdn'], 'sys_info': sys_info}
             log.write('Adding new node %(fqdn)s to database' % d)
             d['enabled'] = settings.node_enable_default
         db.save(d)

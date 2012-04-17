@@ -8,7 +8,6 @@ import signal
 import sys
 
 sys.path.insert(0, '.')
-import settings
 
 def help():
     '''print help message'''
