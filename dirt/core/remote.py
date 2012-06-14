@@ -40,7 +40,7 @@ def remote_execute(db, node, id):
                 db.db.save(doc)
 
                 # use lambda to provide arguments to callback
-                push_args = {'id': id, 'node_id': node_id}
+                push_args = {'id': id, 'node_id': node_id, 'gateway': gw}
                 ch.setcallback(callback = lambda(results): db.push_results(results, **push_args))
 
             except ImportError:

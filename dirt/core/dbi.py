@@ -5,7 +5,7 @@ import getpass
 import couchdb
 
 import settings
-import dirt.core.yelling
+import yelling
 from dirt.core.log import log
 
 class DirtCouchDB():
@@ -49,7 +49,7 @@ class DirtCouchDB():
                 # sometimes this happens when the feed terminates
                 pass
 
-    def push_results(self, results, id, node_id):
+    def push_results(self, results, id, node_id, gateway):
         '''update task document with results'''
         # node disengaged
         node = self.db[node_id]
@@ -58,6 +58,9 @@ class DirtCouchDB():
                 node['alloc'].pop(alloc)
                 break
         self.db.save(node)
+
+        # close remote connection
+        gw.exit()
 
         try:
             # upload attachments
