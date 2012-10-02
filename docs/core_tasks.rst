@@ -17,3 +17,10 @@ A special task that does not return a dictionary, only a boolean. Used internall
 .. automodule:: dirt.tasks.ping
    :members:
 
+dirt.tasks.load
+---------------
+Returns the current short-term load average.
+
+.. automodule:: dirt.tasks.load
+   :members:
+

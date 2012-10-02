@@ -2,6 +2,8 @@ import sys
 import socket
 import signal
 
+import settings
+
 from dirt.core import dbi
 from dirt.core import remote
 from dirt.core import load_balance
@@ -40,7 +42,7 @@ def serve_forever():
     signal.signal(signal.SIGINT, signal_handler)
     log.write('dirt is running...')
 
-    nodes = load_balance.round_robin(db)
+    nodes = settings.load_balancer(db)
     tasks = db.get_tasks()
 
     for id in tasks:

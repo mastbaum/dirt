@@ -1,0 +1,5 @@
+*.pyc
+build
+dist
+dirt.egg-info
+dirt/project.tar.gz
