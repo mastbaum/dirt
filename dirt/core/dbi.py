@@ -1,6 +1,9 @@
 import sys
 import time
+import json
 import socket
+import httplib
+import urllib
 import getpass
 import couchdb
 
@@ -60,7 +63,7 @@ class DirtCouchDB():
         self.db.save(node)
 
         # close remote connection
-        gw.exit()
+        gateway.exit()
 
         try:
             # upload attachments
@@ -105,6 +108,51 @@ class DirtCouchDB():
             raise
         except IndexError:
             log.write('Cannot push results to db, invalid task id %i for document %s' % (taskid, id))
+
+        # update status on github if all tests are done
+        sha = doc['kwargs']['sha']
+        overall_success = True
+        all_finished = True
+        reason = 'Unknown'
+        for row in self.db.view('pytunia/tasks_by_record', startkey=[sha,1], endkey=[sha,1,{}], include_docs=True):
+            if not 'completed' in row.value:
+                all_finished = False
+                break
+            if 'results' in row.value and not row.value['results']['success']:
+                overall_success = False
+                reason = row.value['results']['reason']
+                break
+
+        if all_finished:
+            try:
+                github_oauth_token = settings.github_oauth_token
+                user, repo = doc['kwargs']['git_url'].split(':')[1].split('/')
+                repo = repo.split('.')[0]
+                url = '/repos/%s/%s/statuses/%s' % (user, repo, sha)
+                target_url = settings.results_base_url + sha
+                if overall_success:
+                    status = 'success'
+                    description = 'Build %s passed' % sha[:7]
+                else:
+                    status = 'failure'
+                    description = 'Build %s failed: %s' % (sha[:7], reason)
+
+                conn = httplib.HTTPSConnection('api.github.com')
+                params = {'access_token': github_oauth_token}
+                data = {
+                    'state': status,
+                    'target_url': target_url,
+                    'description': description
+                }
+
+                req = conn.request('POST', url + '?' + urllib.urlencode(params), json.dumps(data))
+                resp = conn.getresponse()
+
+                if resp.status != 201:
+                    log.write('Error %i updating status on commit %s: %s' % resp.status, sha, resp.read())
+
+            except NameError:
+                pass
 
     def get_nodes(self):
         '''query db to get node data'''
