@@ -12,12 +12,13 @@ def remote_execute(db, node, id):
     hostname = node['fqdn']
     try:
         # store node's state in the db
+        node_id = node['_id']
+        node = db[node_id]  # refresh
         alloc = {'master': socket.getfqdn(), 'db': db.db.name, 'task': id}
         if 'alloc' in node:
             node['alloc'].append(alloc)
         else:
             node['alloc'] = [alloc]
-        node_id = node['_id']
         db.save(node)
 
         # check if node is alive then remote_exec the task module
