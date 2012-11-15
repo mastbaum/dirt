@@ -36,7 +36,8 @@ def load(db, margin=0.9, wait=20):
                 try:
                     ncpus = nodes[node]['sys_info']['cpu_count']
                     if get_load(hostname) < ncpus - margin:
-                        yield nodes[node]
+                        if 'alloc' not in nodes[node] or len(nodes[node]['alloc']) < ncpus:
+                            yield nodes[node]
                 except Exception:
                     print 'Error connecting with host %s' % hostname
                     db.disable_node(hostname)
